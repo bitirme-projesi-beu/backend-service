@@ -17,12 +17,16 @@ public class Driver {
     @Column(name = "id")
     private Long id;
     @Column(name = "password")
+    @NonNull
     private String password;
     @Column(name = "email")
+    @NonNull
     private String email;
     @Column(name = "name")
+    @NonNull
     private String name;
     @Column(name="surname")
+    @NonNull
     private String surname;
 
 
