@@ -14,12 +14,48 @@
 	<name>backend-service</name>
 	<description>backend service worker for smarparkinglot project</description>
 
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<scope>test</scope>
+				</dependency>
+			</dependencies>
+			<properties>
+				<activatedProperties>dev</activatedProperties>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>prod</id>
+
+			<dependencies>
+
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+			<properties>
+				<activatedProperties>prod</activatedProperties>
+			</properties>
+		</profile>
+	</profiles>
+
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
 
-	<dependencies>
 
+	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -36,6 +72,7 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
+
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -55,14 +92,17 @@
 			</exclusions>
 		</dependency>
 
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+
+
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
