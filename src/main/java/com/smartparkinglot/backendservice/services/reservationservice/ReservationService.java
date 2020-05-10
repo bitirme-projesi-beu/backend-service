@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ReservationService {
-    ResponseEntity<List<Reservation>> listAll();
-    ResponseEntity<List<Reservation>> getDriverReservations(Long owner_id);
-    ResponseEntity<Reservation> getReservation(String plate);
-    ResponseEntity<Reservation> addOrSave(Reservation reservation);
-    ResponseEntity deleteById(Long reservation_id);
+    List<Reservation> listAll();
+    List<Reservation> getDriverReservations(Long owner_id);
+    Reservation getReservation(String plate);
+    Reservation addOrSave(Reservation reservation);
+    void deleteById(Long reservation_id);
     Boolean checkActiveReservation();
 }

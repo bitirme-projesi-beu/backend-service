@@ -1,6 +1,8 @@
 package com.smartparkinglot.backendservice.services.reservationservice;
 
 import com.smartparkinglot.backendservice.domain.Reservation;
+import com.smartparkinglot.backendservice.exceptions.reservationexceptions.ActiveReservationExistsException;
+import com.smartparkinglot.backendservice.exceptions.reservationexceptions.ReservationNotFoundException;
 import lombok.AllArgsConstructor;
 import org.hibernate.jdbc.Expectation;
 import org.springframework.http.HttpStatus;
@@ -17,12 +19,12 @@ public class ReservationServiceImpl implements ReservationService {
     ReservationRepository reservationRepository;
 
     @Override
-    public ResponseEntity<List<Reservation>> listAll() {
-        return new ResponseEntity<List<Reservation>>(reservationRepository.findAll(),HttpStatus.OK);
+    public List<Reservation> listAll() {
+        return reservationRepository.findAll();
     }
 
     @Override
-    public ResponseEntity<List<Reservation>> getDriverReservations(Long owner_id) {
+    public List<Reservation> getDriverReservations(Long owner_id) {
         try{
             List<Reservation> all_reservations = reservationRepository.findAll();
 
@@ -31,44 +33,39 @@ public class ReservationServiceImpl implements ReservationService {
                     all_reservations.remove(reservation);
                 }
             }
-            return new ResponseEntity<List<Reservation>>(all_reservations,HttpStatus.OK);
+            return all_reservations;
         }catch (Exception e){
-            return new ResponseEntity<List<Reservation>>(HttpStatus.NOT_FOUND);
+            throw new ReservationNotFoundException("There is no reservation");
         }
 
     }
 
     @Override
-    public ResponseEntity<Reservation> getReservation(String plate) {
+    public Reservation getReservation(String plate) {
         try{
-            return new ResponseEntity<Reservation>(reservationRepository.findByPlate(plate),HttpStatus.OK);
+            return reservationRepository.findByPlate(plate);
         }catch (Exception e){
-            return new ResponseEntity<Reservation>(HttpStatus.NOT_FOUND);
+            throw new ReservationNotFoundException("There is no reservation under the given plate:"+plate);
         }
     }
 
     @Override
-    public ResponseEntity<Reservation> addOrSave(Reservation reservation) {
+    public Reservation addOrSave(Reservation reservation) {
 
-        if (checkActiveReservation()){
-            return new ResponseEntity<Reservation>(HttpStatus.CONFLICT); // there is currently active reservation
+        if (checkActiveReservation()) {
+            throw new ActiveReservationExistsException("Already have an active reservation!");
         }
 
-        try{
             reservation.setActive(true);
-            return new ResponseEntity<Reservation>(reservationRepository.save(reservation),HttpStatus.CREATED);
-        }catch (Exception e){
-            return new ResponseEntity<Reservation>(HttpStatus.BAD_REQUEST);
-        }
-    }
+            return reservationRepository.save(reservation);
 
+    }
     @Override
-    public ResponseEntity deleteById(Long reservation_id) {
-        try {
+    public void deleteById(Long reservation_id) {
+        if (reservation_id == null){
+            throw new NullPointerException();
+        }else{
             reservationRepository.deleteById(reservation_id);
-            return new ResponseEntity(HttpStatus.OK);
-        }catch (Exception e){
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
 

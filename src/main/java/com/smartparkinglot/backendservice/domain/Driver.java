@@ -1,17 +1,17 @@
 package com.smartparkinglot.backendservice.domain;
 
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Data
 @Table(name = "drivers")
+@NoArgsConstructor
 public class Driver {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
