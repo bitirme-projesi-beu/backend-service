@@ -6,5 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.CONFLICT)
 public class DriverAlreadyExistsException extends RuntimeException {
     public DriverAlreadyExistsException(String message) {
+        super(message);
     }
 }

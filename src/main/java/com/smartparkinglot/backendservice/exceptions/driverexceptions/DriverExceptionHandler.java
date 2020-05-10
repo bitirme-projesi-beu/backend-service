@@ -1,6 +1,9 @@
 package com.smartparkinglot.backendservice.exceptions.driverexceptions;
 
 import com.smartparkinglot.backendservice.domain.ErrorResponse;
+import com.smartparkinglot.backendservice.exceptions.driverexceptions.DriverAlreadyExistsException;
+import com.smartparkinglot.backendservice.exceptions.driverexceptions.DriverNotFoundException;
+import com.smartparkinglot.backendservice.exceptions.driverexceptions.WrongCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
