@@ -1,17 +1,19 @@
 package com.smartparkinglot.backendservice.domain;
 
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "drivers")
 @NoArgsConstructor
 public class Driver {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -28,9 +30,9 @@ public class Driver {
     @Column(name="surname")
     @NonNull
     private String surname;
-
-
-
-
-
+    @JsonManagedReference
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OrderBy("createdAt")
+    private List<Reservation> reservationList;
+    private Boolean isDeleted;
 }

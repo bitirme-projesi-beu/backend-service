@@ -1,5 +1,6 @@
 package com.smartparkinglot.backendservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -17,11 +18,16 @@ public class Reservation {
     private Long id;
     @NonNull
     private Long parkingLotId;
-    @NonNull
-    private Long ownerId;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "owner_id", nullable = false)
+    @OrderBy("id")
+    private Driver owner;
     private boolean isActive;
     @NonNull
     private Date createdAt;
     @NonNull
     private String plate;
+    @NonNull
+    private Boolean isDeleted;
 }

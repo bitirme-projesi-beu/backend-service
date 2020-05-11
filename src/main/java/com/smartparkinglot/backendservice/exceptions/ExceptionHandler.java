@@ -1,22 +1,18 @@
-package com.smartparkinglot.backendservice.exceptions.driverexceptions;
+package com.smartparkinglot.backendservice.exceptions;
 
 import com.smartparkinglot.backendservice.domain.ErrorResponse;
-import com.smartparkinglot.backendservice.exceptions.driverexceptions.DriverAlreadyExistsException;
-import com.smartparkinglot.backendservice.exceptions.driverexceptions.DriverNotFoundException;
-import com.smartparkinglot.backendservice.exceptions.driverexceptions.WrongCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @ControllerAdvice
-public class DriverExceptionHandler extends ResponseEntityExceptionHandler {
+public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
     public final ResponseEntity<Object> handleAllExceptions(Exception ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
@@ -24,23 +20,31 @@ public class DriverExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity(err, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(DriverNotFoundException.class)
-    public final ResponseEntity<Object> handleDriverNotFoundException(Exception ex) {
+    @org.springframework.web.bind.annotation.ExceptionHandler(AccountActivatedException.class)
+    public final ResponseEntity<Object> handleAccountActivatedExceptions(Exception ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
-        ErrorResponse error = new ErrorResponse("Driver not found", details);
+        ErrorResponse err = new ErrorResponse("INFO", details);
+        return new ResponseEntity(err, HttpStatus.ALREADY_REPORTED);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(NotFoundException.class)
+    public final ResponseEntity<Object> handleNotFoundException(Exception ex) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("Not found", details);
         return new ResponseEntity(error, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DriverAlreadyExistsException.class)
-    public final ResponseEntity<Object> handleDriverAlreadyExistsException(Exception ex) {
+    @org.springframework.web.bind.annotation.ExceptionHandler(AlreadyExistsException.class)
+    public final ResponseEntity<Object> handleAlreadyExistsException(Exception ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());
         ErrorResponse error = new ErrorResponse("Already exists", details);
         return new ResponseEntity(error, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(WrongCredentialsException.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(WrongCredentialsException.class)
     public final ResponseEntity<Object> handleWrongCredentialsException(Exception ex) {
         List<String> details = new ArrayList<>();
         details.add(ex.getLocalizedMessage());

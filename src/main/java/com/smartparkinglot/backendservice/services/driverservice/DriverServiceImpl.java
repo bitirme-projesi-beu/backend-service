@@ -1,25 +1,25 @@
 package com.smartparkinglot.backendservice.services.driverservice;
 
 import com.smartparkinglot.backendservice.domain.Driver;
-import com.smartparkinglot.backendservice.exceptions.driverexceptions.DriverAlreadyExistsException;
-import com.smartparkinglot.backendservice.exceptions.driverexceptions.DriverNotFoundException;
-import com.smartparkinglot.backendservice.exceptions.driverexceptions.WrongCredentialsException;
+import com.smartparkinglot.backendservice.domain.Reservation;
+import com.smartparkinglot.backendservice.exceptions.AccountActivatedException;
+import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
+import com.smartparkinglot.backendservice.exceptions.NotFoundException;
+import com.smartparkinglot.backendservice.exceptions.WrongCredentialsException;
 import com.smartparkinglot.backendservice.repositories.DriverRepository;
+import com.smartparkinglot.backendservice.services.reservationservice.ReservationService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.validation.constraints.Null;
-import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
 @AllArgsConstructor
 public class DriverServiceImpl implements DriverService {
     DriverRepository driverRepository;
+    ReservationService reservationService;
 
     @Override
     public List<Driver> getAllDrivers() {
@@ -31,9 +31,38 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
+    public List<Reservation> getDriverReservations(Long driver_id) {
+        Driver driver = driverRepository.findById(driver_id).orElseThrow(
+                () -> new NotFoundException("Driver not found with id:"+driver_id));
+        List<Reservation> reservationList = driver.getReservationList();
+        if (reservationList == null) throw new NotFoundException("There are no reservation related to this driver with id:"+driver_id);
+        return reservationList;
+    }
+
+    @Override
+    public Reservation getDriverReservation(Long reservation_id) {
+        Reservation reservation = reservationService.getReservation(reservation_id);
+
+        if (reservation == null){
+            throw new NotFoundException("There is no entry with this reservation id:"+reservation_id);
+        }
+
+        return reservation;
+    }
+
+    @Override
     public Driver getById(Long id) {
-        return driverRepository.findById(id).orElseThrow(
-                () -> new DriverNotFoundException("Driver not found with id: "+id));
+        Driver driver = driverRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Driver not found with id: "+id));
+
+        driver.setReservationList(driver.getReservationList()
+                .stream()
+                .filter(reservation -> !reservation.getIsDeleted())
+                .collect(Collectors.toList()));
+
+
+        return driver;
+
     }
 
     @Override
@@ -42,8 +71,15 @@ public class DriverServiceImpl implements DriverService {
         String driver_email = driver.getEmail();
 
         if (driver_id == null && driverRepository.findByEmail(driver_email) != null ){
-            throw new DriverAlreadyExistsException("User already exists with given credentials");
+            Driver found_driver = driverRepository.findByEmail(driver_email);
+            if (found_driver.getIsDeleted()){
+                found_driver.setIsDeleted(false);
+                driverRepository.save(found_driver);
+                throw new AccountActivatedException("Account reactivated again.");
+            }
+            throw new AlreadyExistsException("User already exists with given credentials");
         }else{
+            driver.setIsDeleted(false);
             return driverRepository.save(driver);
         }
     }
@@ -51,13 +87,21 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public void deleteDriver(Driver driver) {
         if (driver.getId() == null)
-            throw new DriverNotFoundException("There is no id attached to driver");
+            throw new NotFoundException("There is no id attached to driver");
         try{
-            driverRepository.delete(driver);
+            driverRepository.deleteById(driver.getId());
         }catch (Exception ex){
-
+            System.out.println(ex.getLocalizedMessage());
         }
     }
+
+    @Override
+    public void setDeactive(Driver driver) {
+        Driver driverb = driverRepository.findById(driver.getId()).get();
+        driverb.setIsDeleted(true);
+        driverRepository.save(driverb);
+    }
+
 
 
     @Override
@@ -67,8 +111,9 @@ public class DriverServiceImpl implements DriverService {
             driver = driverRepository.findByEmail(email);
             driverpassword = driver.getPassword();
         }catch (Exception e){
-            throw new DriverNotFoundException("Driver not found with given credentials");
+            throw new NotFoundException("Driver not found with given credentials");
         }
+            if (driver.getIsDeleted()) throw new NotFoundException("This account is deleted");
             if ( driverpassword.equals(password)) {
                 return true;
             }
@@ -77,4 +122,5 @@ public class DriverServiceImpl implements DriverService {
             }
 
     }
+
 }

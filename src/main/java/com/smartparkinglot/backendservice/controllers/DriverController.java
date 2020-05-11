@@ -2,12 +2,8 @@ package com.smartparkinglot.backendservice.controllers;
 
 
 import com.smartparkinglot.backendservice.domain.Driver;
+import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.services.driverservice.DriverService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +13,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/user")
-@AllArgsConstructor
 public class DriverController {
+    @Autowired
     private DriverService userService;
     @GetMapping
     public ResponseEntity<List<Driver>> getAllDrivers(){
@@ -30,9 +26,24 @@ public class DriverController {
         return new ResponseEntity<Driver>(userService.getById(id),HttpStatus.OK);
     }
 
-    @DeleteMapping
+    @GetMapping("{driver_id}/reservations")
+    public ResponseEntity<List<Reservation>> getDriverReservations(@PathVariable Long driver_id){
+        return new ResponseEntity<List<Reservation>>(userService.getDriverReservations(driver_id),HttpStatus.FOUND);
+    }
+
+    @GetMapping("{driver_id}/reservations/{reservation_id}")
+    public ResponseEntity<Reservation> getDriverReservation(@PathVariable Long driver_id, @PathVariable Long reservation_id){
+        return new ResponseEntity<Reservation>(userService.getDriverReservation(reservation_id),HttpStatus.FOUND);
+    }
+
+    @DeleteMapping("delete")
     public ResponseEntity deleteDriver(@RequestBody Driver driver){
         userService.deleteDriver(driver);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+    @DeleteMapping()
+    public ResponseEntity deactiveDriver(@RequestBody Driver driver){
+        userService.setDeactive(driver);
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -41,7 +52,7 @@ public class DriverController {
         return new ResponseEntity<Driver>(userService.addOrSave(driver),HttpStatus.CREATED);
     }
 
-    @GetMapping("/login") // form data olarak gelmeli
+    @PostMapping("/login") // form data olarak gelmeli
     public ResponseEntity login(String email, String password){
         userService.Login(email, password);
         return new ResponseEntity(HttpStatus.ACCEPTED);
