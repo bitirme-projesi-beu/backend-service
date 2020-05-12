@@ -33,9 +33,8 @@ public class DriverController {
     }
 
     @PostMapping("/login") // form data olarak gelmeli
-    public ResponseEntity login(String email, String password){
-        driverService.Login(email, password);
-        return new ResponseEntity(HttpStatus.ACCEPTED);
+    public ResponseEntity<Driver> login(String email, String password){
+        return new ResponseEntity(driverService.Login(email, password),HttpStatus.ACCEPTED);
     }
     @DeleteMapping()
     public ResponseEntity deactiveDriver(@RequestBody Driver driver){
