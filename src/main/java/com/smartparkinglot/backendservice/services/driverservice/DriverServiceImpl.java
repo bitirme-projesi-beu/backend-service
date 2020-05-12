@@ -31,34 +31,9 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public List<Reservation> getDriverReservations(Long driver_id) {
-        Driver driver = driverRepository.findById(driver_id).orElseThrow(
-                () -> new NotFoundException("Driver not found with id:"+driver_id));
-        List<Reservation> reservationList = driver.getReservationList();
-        if (reservationList == null) throw new NotFoundException("There are no reservation related to this driver with id:"+driver_id);
-        return reservationList;
-    }
-
-    @Override
-    public Reservation getDriverReservation(Long reservation_id) {
-        Reservation reservation = reservationService.getReservation(reservation_id);
-
-        if (reservation == null){
-            throw new NotFoundException("There is no entry with this reservation id:"+reservation_id);
-        }
-
-        return reservation;
-    }
-
-    @Override
     public Driver getById(Long id) {
         Driver driver = driverRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Driver not found with id: "+id));
-
-        driver.setReservationList(driver.getReservationList()
-                .stream()
-                .filter(reservation -> !reservation.getIsDeleted())
-                .collect(Collectors.toList()));
 
 
         return driver;

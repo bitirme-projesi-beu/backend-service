@@ -1,5 +1,6 @@
 package com.smartparkinglot.backendservice.controllers;
 
+import com.smartparkinglot.backendservice.domain.Driver;
 import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.services.reservationservice.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/reservation")
+@RequestMapping("api/reservations")
 
 public class ReservationController {
     @Autowired
@@ -27,10 +28,19 @@ public class ReservationController {
     }
 
     @GetMapping("plate/{plate}")
-    public ResponseEntity<Reservation> getDriverReservation(@PathVariable String plate){
-        return new ResponseEntity<Reservation>(reservationService.getReservation(plate),HttpStatus.FOUND);
+    public ResponseEntity<List<Reservation>> getReservationWithPlate(@PathVariable String plate){
+        return new ResponseEntity<List<Reservation>>(reservationService.getReservationWithPlate(plate),HttpStatus.FOUND);
     }
 
+    @GetMapping("drivers/{driver_id}/{res_id}")
+    public ResponseEntity<Reservation> getDriverReservation(@PathVariable Long driver_id,@PathVariable Long res_id){
+        return new ResponseEntity<Reservation>(reservationService.getReservation(driver_id,res_id),HttpStatus.FOUND);
+    }
+
+    @GetMapping("drivers/{driver_id}")
+    public ResponseEntity<List<Reservation>> getDriverReservations(@PathVariable Long driver_id){
+        return new ResponseEntity<List<Reservation>>(reservationService.getDriverReservations(driver_id),HttpStatus.FOUND);
+    }
     @PostMapping
     public ResponseEntity<Reservation> addOrSave(@RequestBody Reservation reservation){
         return new ResponseEntity<Reservation>(reservationService.addOrSave(reservation),HttpStatus.CREATED);

@@ -4,30 +4,24 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
 @Data
 @Table(name = "reservations")
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NonNull
-    private Long parkingLotId;
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "owner_id", nullable = false)
-    @OrderBy("id")
-    private Driver owner;
+    @NonNull @NotNull private Long parkingLotId;
+    @NonNull @NotNull private Long driverId;
     private boolean isActive;
-    @NonNull
-    private Date createdAt;
-    @NonNull
-    private String plate;
-    @NonNull
-    private Boolean isDeleted;
-}
+    @NonNull @NotNull private Date createdAt;
+    @NonNull @NotNull private String plate;
+    }
