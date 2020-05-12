@@ -18,11 +18,13 @@ public class Reservation {
     private Long id;
     @NonNull
     private Long parkingLotId;
+
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
     @OrderBy("id")
     private Driver owner;
+
     private boolean isActive;
     @NonNull
     private Date createdAt;

@@ -9,6 +9,6 @@ public interface ReservationService {
     Reservation getReservation(Long id);
     Reservation getReservation(String plate);
     Reservation addOrSave(Reservation reservation);
-    void deleteById(Reservation reservation);
+    void delete(Reservation reservation);
     Boolean checkActiveReservation(Long id);
 }

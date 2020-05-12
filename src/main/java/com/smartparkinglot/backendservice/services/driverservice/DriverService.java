@@ -13,5 +13,5 @@ public interface DriverService {
     Driver addOrSave(Driver driver);
     void deleteDriver(Driver driver);
     void setDeactive(Driver driver);
-    Boolean Login(String email, String password);
+    Driver Login(String email, String password);
 }

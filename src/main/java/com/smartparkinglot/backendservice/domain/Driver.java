@@ -30,9 +30,11 @@ public class Driver {
     @Column(name="surname")
     @NonNull
     private String surname;
+
     @JsonManagedReference
-    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OrderBy("createdAt")
     private List<Reservation> reservationList;
+
     private Boolean isDeleted;
 }

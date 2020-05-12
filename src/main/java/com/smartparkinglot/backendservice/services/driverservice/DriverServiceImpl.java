@@ -89,9 +89,9 @@ public class DriverServiceImpl implements DriverService {
         if (driver.getId() == null)
             throw new NotFoundException("There is no id attached to driver");
         try{
-            driverRepository.deleteById(driver.getId());
+            driverRepository.delete(driver);
         }catch (Exception ex){
-            System.out.println(ex.getLocalizedMessage());
+            System.out.println("HATA ---> " + ex.getLocalizedMessage());
         }
     }
 
@@ -105,7 +105,7 @@ public class DriverServiceImpl implements DriverService {
 
 
     @Override
-    public Boolean Login(String email, String password) {
+    public Driver Login(String email, String password) {
         Driver driver; String driverpassword;
         try{
             driver = driverRepository.findByEmail(email);
@@ -115,7 +115,7 @@ public class DriverServiceImpl implements DriverService {
         }
             if (driver.getIsDeleted()) throw new NotFoundException("This account is deleted");
             if ( driverpassword.equals(password)) {
-                return true;
+                return driver;
             }
             else {
                 throw new WrongCredentialsException("Wrong Credentials");

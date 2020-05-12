@@ -49,12 +49,18 @@ public class ReservationServiceImpl implements ReservationService {
 
     }
     @Override
-    public void deleteById(Reservation reservation) {
-        if (reservation == null){
+    public void delete(Reservation reservation) {
+        if (reservation == null ){
             throw new NullPointerException();
-        }else{
-            Long id =reservation.getId();
-            reservationRepository.deleteById(id);
+        }else if (reservationRepository.findById(reservation.getId()) == null){
+            throw new NotFoundException("Not found with id:"+reservation.getId());
+        }
+        else{
+            reservationRepository.delete(reservation);
+        }
+
+        if (reservationRepository.findById(reservation.getId().longValue()).isPresent()){
+            throw new AlreadyExistsException("Couldn't Delete");
         }
     }
 

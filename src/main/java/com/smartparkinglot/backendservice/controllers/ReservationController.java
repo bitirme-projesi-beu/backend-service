@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/reservation")
-
 public class ReservationController {
     @Autowired
     ReservationService reservationService;
@@ -38,7 +37,7 @@ public class ReservationController {
 
     @DeleteMapping
     public ResponseEntity deleteReservation(@RequestBody Reservation reservation){
-        reservationService.deleteById(reservation);
+        reservationService.delete(reservation);
         return new ResponseEntity( HttpStatus.OK);
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("api/user")
 public class DriverController {
     @Autowired
-    private DriverService userService;
+    DriverService userService;
     @GetMapping
     public ResponseEntity<List<Driver>> getAllDrivers(){
         return new ResponseEntity<List<Driver>>(userService.getAllDrivers(),HttpStatus.OK);
