@@ -1,25 +1,21 @@
 package com.smartparkinglot.backendservice.services.driverservice;
 
 import com.smartparkinglot.backendservice.domain.Driver;
-import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.exceptions.AccountActivatedException;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.exceptions.WrongCredentialsException;
 import com.smartparkinglot.backendservice.repositories.DriverRepository;
-import com.smartparkinglot.backendservice.services.reservationservice.ReservationService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
-@AllArgsConstructor
 public class DriverServiceImpl implements DriverService {
+    @Autowired
     DriverRepository driverRepository;
-    ReservationService reservationService;
 
     @Override
     public List<Driver> getAllDrivers() {

@@ -1,6 +1,5 @@
 package com.smartparkinglot.backendservice.controllers;
 
-import com.smartparkinglot.backendservice.domain.Driver;
 import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.services.reservationservice.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class ReservationController {
 
     @GetMapping("id/{res_id}")
     public ResponseEntity<Reservation> getReservationWithResId(@PathVariable Long res_id){
-        return new ResponseEntity<Reservation>(reservationService.getReservation(res_id),HttpStatus.FOUND);
+        return new ResponseEntity<Reservation>(reservationService.getReservationWithId(res_id),HttpStatus.FOUND);
     }
 
     @GetMapping("plate/{plate}")
@@ -34,7 +33,7 @@ public class ReservationController {
 
     @GetMapping("drivers/{driver_id}/{res_id}")
     public ResponseEntity<Reservation> getDriverReservation(@PathVariable Long driver_id,@PathVariable Long res_id){
-        return new ResponseEntity<Reservation>(reservationService.getReservation(driver_id,res_id),HttpStatus.FOUND);
+        return new ResponseEntity<Reservation>(reservationService.getDriverReservation(driver_id,res_id),HttpStatus.FOUND);
     }
 
     @GetMapping("drivers/{driver_id}")

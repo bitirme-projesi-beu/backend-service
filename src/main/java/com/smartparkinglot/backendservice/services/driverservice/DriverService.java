@@ -1,7 +1,6 @@
 package com.smartparkinglot.backendservice.services.driverservice;
 
 import com.smartparkinglot.backendservice.domain.Driver;
-import com.smartparkinglot.backendservice.domain.Reservation;
 
 import java.util.List;
 

@@ -1,6 +1,5 @@
 package com.smartparkinglot.backendservice.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

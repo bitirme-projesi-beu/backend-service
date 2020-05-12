@@ -7,17 +7,18 @@ import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.repositories.DriverRepository;
 import com.smartparkinglot.backendservice.repositories.ReservationRepository;
 import lombok.AllArgsConstructor;
-import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+
 public class ReservationServiceImpl implements ReservationService {
 
+    @Autowired
     ReservationRepository reservationRepository;
-    DriverRepository driverRepository;
+
 
 
     @Override
@@ -28,12 +29,20 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Reservation> getDriverReservations(Long driver_id) {
         List<Reservation> res = reservationRepository.findByDriverId(driver_id);
+        // is driver alive ? do i need to connect driver service or is it unnecceserry to check ?
         if (res == null) throw new NotFoundException("No reservation under given driver id:"+driver_id);
         return res;
     }
 
     @Override
-    public Reservation getReservation(Long driver_id,Long res_id) {
+    public Reservation getReservationWithId(Long res_id) {
+        Reservation reservation = reservationRepository.findById(res_id).orElseThrow(
+                () -> new NotFoundException("There is no reservation under the given reservation id:"+res_id));
+        return reservation;
+    }
+
+    @Override
+    public Reservation getDriverReservation(Long driver_id,Long res_id) {
             Reservation reservation = reservationRepository.findById(res_id).orElseThrow(
                     () -> new NotFoundException("There is no reservation under the given reservation id:"+res_id));
             if (reservation.getDriverId() != driver_id) throw new NotFoundException("There is no reservation under this driver with this reservation id:"+res_id);

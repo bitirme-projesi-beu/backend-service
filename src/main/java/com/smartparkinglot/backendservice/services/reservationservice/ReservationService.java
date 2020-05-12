@@ -9,8 +9,8 @@ public interface ReservationService {
     List<Reservation> listAll();
 
     List<Reservation> getDriverReservations(Long driver_id);
-    Reservation getReservation(Long res_id); // adminlere acik
-    Reservation getReservation(Long driver_id, Long res_id); // user'a acık
+    Reservation getReservationWithId(Long res_id); // adminlere acik
+    Reservation getDriverReservation(Long driver_id, Long res_id); // user'a acık
     List<Reservation> getReservationWithPlate(String plate);
     Reservation addOrSave(Reservation reservation);
     void deleteById(Reservation reservation);
