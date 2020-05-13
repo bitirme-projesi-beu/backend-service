@@ -1,12 +1,9 @@
 package com.smartparkinglot.backendservice.services.parkinglotservice;
 
-import com.smartparkinglot.backendservice.domain.Driver;
 import com.smartparkinglot.backendservice.domain.ParkingLot;
 import com.smartparkinglot.backendservice.exceptions.AccountActivatedException;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
-import com.smartparkinglot.backendservice.exceptions.WrongCredentialsException;
-import com.smartparkinglot.backendservice.repositories.DriverRepository;
 import com.smartparkinglot.backendservice.repositories.ParkingLotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,5 +74,8 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         parkingLotRepository.save(parkingLot1);
     }
 
-
+    @Override
+    public Boolean isExistsById(Long parkinglotId) {
+        return parkingLotRepository.existsById(parkinglotId);
+    }
 }

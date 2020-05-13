@@ -8,6 +8,7 @@ import lombok.NonNull;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -28,5 +29,7 @@ public class Driver {
     @NonNull @NotNull private String name;
     @Column(name="surname")
     @NonNull @NotNull private String surname;
+    @NonNull @NotNull LocalDateTime createdAt;
     private Boolean isDeleted;
+
 }

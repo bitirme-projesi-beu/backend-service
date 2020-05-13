@@ -1,7 +1,6 @@
 package com.smartparkinglot.backendservice.controllers;
 
 
-import com.smartparkinglot.backendservice.domain.Driver;
 import com.smartparkinglot.backendservice.domain.ParkingLot;
 import com.smartparkinglot.backendservice.services.parkinglotservice.ParkingLotService;
 import org.springframework.beans.factory.annotation.Autowired;
