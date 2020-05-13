@@ -6,6 +6,7 @@ import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.repositories.DriverRepository;
 import com.smartparkinglot.backendservice.repositories.ReservationRepository;
+import com.smartparkinglot.backendservice.services.driverservice.DriverService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     ReservationRepository reservationRepository;
-
+    @Autowired
+    DriverService driverService;
 
 
     @Override
@@ -58,12 +60,13 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation addOrSave(Reservation reservation) {
+        if (!driverService.isExistsById(reservation.getDriverId())) throw new NotFoundException("There isn't any driver registered with id:"+reservation.getDriverId());
+
         Reservation activeRes = reservationRepository.findByDriverIdAndIsActiveTrue(reservation.getDriverId());
-        if (activeRes != null){
-            throw new AlreadyExistsException("Already have an active reservation with this driver!");
-        }
-            reservation.setActive(true);
-            return reservationRepository.save(reservation);
+        if (activeRes != null) throw new AlreadyExistsException("Already have an active reservation with this driver!");
+
+        reservation.setActive(true);
+        return reservationRepository.save(reservation);
 
     }
     @Override

@@ -94,4 +94,9 @@ public class DriverServiceImpl implements DriverService {
 
     }
 
+    @Override
+    public Boolean isExistsById(Long id) {
+        return driverRepository.existsById(id);
+    }
+
 }

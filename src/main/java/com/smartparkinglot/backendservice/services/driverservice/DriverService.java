@@ -11,4 +11,5 @@ public interface DriverService {
     void deleteDriver(Driver driver);
     void setDeactive(Driver driver);
     Driver Login(String email, String password);
+    Boolean isExistsById(Long id);
 }

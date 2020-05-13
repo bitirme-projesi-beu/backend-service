@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("api/user")
 public class DriverController {
     @Autowired
-    private DriverService driverService;
+    DriverService driverService;
 
 
     @GetMapping
