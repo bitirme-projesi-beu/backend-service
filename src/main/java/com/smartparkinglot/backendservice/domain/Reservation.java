@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -21,6 +21,9 @@ public class Reservation {
     @NonNull @NotNull private Long parkingLotId;
     @NonNull @NotNull private Long driverId;
     private boolean isActive;
-    @NonNull @NotNull private Date createdAt;
+    @NonNull @NotNull private LocalDateTime createdAt;
+    private LocalDateTime deactivatedAt;
     @NonNull @NotNull private String plate;
+    @NonNull @NotNull private Double hourlyWage; // notnull yapma
+    private Double cost;
     }

@@ -10,4 +10,7 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     void deleteById(Long id);
     List<Reservation> findByDriverId(Long driverId);
     Reservation findByDriverIdAndIsActiveTrue(Long driverId);
+    Reservation findByParkingLotIdAndPlateAndIsActiveTrue(Long parkingLotId, String plate);
+
+    List<Reservation> findByParkingLotId(Long parkingLotId);
 }
