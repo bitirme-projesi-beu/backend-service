@@ -12,6 +12,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/parkinglots")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 public class ParkingLotController {
     @Autowired
     ParkingLotService parkingLotService;

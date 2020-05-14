@@ -12,6 +12,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/user")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+
 public class DriverController {
     @Autowired
     DriverService driverService;
