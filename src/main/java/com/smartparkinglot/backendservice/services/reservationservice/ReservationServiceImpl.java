@@ -1,22 +1,27 @@
 package com.smartparkinglot.backendservice.services.reservationservice;
 
+import com.smartparkinglot.backendservice.domain.Driver;
 import com.smartparkinglot.backendservice.domain.Reservation;
-import com.smartparkinglot.backendservice.exceptions.reservationexceptions.ActiveReservationExistsException;
-import com.smartparkinglot.backendservice.exceptions.reservationexceptions.ReservationNotFoundException;
-import lombok.AllArgsConstructor;
-import org.hibernate.jdbc.Expectation;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
+import com.smartparkinglot.backendservice.exceptions.NotFoundException;
+import com.smartparkinglot.backendservice.repositories.DriverRepository;
 import com.smartparkinglot.backendservice.repositories.ReservationRepository;
+import com.smartparkinglot.backendservice.services.driverservice.DriverService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+
 public class ReservationServiceImpl implements ReservationService {
 
+    @Autowired
     ReservationRepository reservationRepository;
+    @Autowired
+    DriverService driverService;
+
 
     @Override
     public List<Reservation> listAll() {
@@ -24,57 +29,54 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getDriverReservations(Long owner_id) {
-        try{
-            List<Reservation> all_reservations = reservationRepository.findAll();
-
-            for (Reservation reservation:  all_reservations  ){
-                if (reservation.getOwnerId() != owner_id ){
-                    all_reservations.remove(reservation);
-                }
-            }
-            return all_reservations;
-        }catch (Exception e){
-            throw new ReservationNotFoundException("There is no reservation");
-        }
-
+    public List<Reservation> getDriverReservations(Long driver_id) {
+        List<Reservation> res = reservationRepository.findByDriverId(driver_id);
+        // is driver alive ? do i need to connect driver service or is it unnecceserry to check ?
+        if (res == null) throw new NotFoundException("No reservation under given driver id:"+driver_id);
+        return res;
     }
 
     @Override
-    public Reservation getReservation(String plate) {
-        try{
-            return reservationRepository.findByPlate(plate);
-        }catch (Exception e){
-            throw new ReservationNotFoundException("There is no reservation under the given plate:"+plate);
-        }
+    public Reservation getReservationWithId(Long res_id) {
+        Reservation reservation = reservationRepository.findById(res_id).orElseThrow(
+                () -> new NotFoundException("There is no reservation under the given reservation id:"+res_id));
+        return reservation;
+    }
+
+    @Override
+    public Reservation getDriverReservation(Long driver_id,Long res_id) {
+            Reservation reservation = reservationRepository.findById(res_id).orElseThrow(
+                    () -> new NotFoundException("There is no reservation under the given reservation id:"+res_id));
+            if (reservation.getDriverId() != driver_id) throw new NotFoundException("There is no reservation under this driver with this reservation id:"+res_id);
+            return reservation;
+    }
+
+    @Override
+    public List<Reservation> getReservationWithPlate(String plate) {
+        List<Reservation> res = reservationRepository.findByPlate(plate);
+        if (res == null ) throw new NotFoundException("There is no reservation under the given plate:"+plate);
+        else return res;
     }
 
     @Override
     public Reservation addOrSave(Reservation reservation) {
+        if (!driverService.isExistsById(reservation.getDriverId())) throw new NotFoundException("There isn't any driver registered with id:"+reservation.getDriverId());
 
-        if (checkActiveReservation()) {
-            throw new ActiveReservationExistsException("Already have an active reservation!");
-        }
+        Reservation activeRes = reservationRepository.findByDriverIdAndIsActiveTrue(reservation.getDriverId());
+        if (activeRes != null) throw new AlreadyExistsException("Already have an active reservation with this driver!");
 
-            reservation.setActive(true);
-            return reservationRepository.save(reservation);
+        reservation.setActive(true);
+        return reservationRepository.save(reservation);
 
     }
     @Override
-    public void deleteById(Long reservation_id) {
-        if (reservation_id == null){
+    public void deleteById(Reservation reservation) {
+        if (reservation == null){
             throw new NullPointerException();
         }else{
-            reservationRepository.deleteById(reservation_id);
+            Long id =reservation.getId();
+            reservationRepository.deleteById(id);
         }
     }
 
-    @Override
-    public Boolean checkActiveReservation() {
-        List<Reservation> reservations = reservationRepository.findAll();
-        for (Reservation reservation: reservations){
-            if (reservation.isActive()) return true;
-        }
-        return false;
-    }
 }

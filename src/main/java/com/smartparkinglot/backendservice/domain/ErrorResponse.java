@@ -1,10 +1,8 @@
 package com.smartparkinglot.backendservice.domain;
 
 
-
 import lombok.Data;
 
-import javax.persistence.Entity;
 import java.util.List;
 
 @Data

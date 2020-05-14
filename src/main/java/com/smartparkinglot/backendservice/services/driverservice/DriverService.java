@@ -1,7 +1,6 @@
 package com.smartparkinglot.backendservice.services.driverservice;
 
 import com.smartparkinglot.backendservice.domain.Driver;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -10,5 +9,7 @@ public interface DriverService {
     Driver getById(Long id);
     Driver addOrSave(Driver driver);
     void deleteDriver(Driver driver);
-    Boolean Login(String email, String password);
+    void setDeactive(Driver driver);
+    Driver Login(String email, String password);
+    Boolean isExistsById(Long id);
 }

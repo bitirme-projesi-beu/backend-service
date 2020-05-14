@@ -1,4 +1,4 @@
-package com.smartparkinglot.backendservice.exceptions.driverexceptions;
+package com.smartparkinglot.backendservice.exceptions;
 
 
 import org.springframework.http.HttpStatus;
