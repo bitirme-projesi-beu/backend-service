@@ -1,0 +1,28 @@
+version : "3"
+
+services:
+    database:
+       image: postgres
+       environment:
+              TZ: "Asia/Istanbul"
+              POSTGRES_DB: smartparkinglot
+              POSTGRES_USER: developer
+              POSTGRES_PASSWORD: smartparkinglot
+       volumes:
+        - postgres:/var/lib/postgresql/data
+       ports:
+        - 5430:5432
+    
+    backend-service:
+        container_name : backend-service
+        build: backend-service
+        command: bash -c "while !</dev/tcp/postgres/5432; do >&2 echo 'Waiting for postgres to up...' sleep 1; done;"
+        ports:
+            - "8081:8081"
+        depends_on:
+          - database
+        environment:
+          TZ: "Asia/Istanbul"
+        restart: always
+volumes:
+    postgres:
