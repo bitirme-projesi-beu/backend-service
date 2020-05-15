@@ -1,7 +1,7 @@
-package com.smartparkinglot.backendservice.controllers;
+package com.smartparkinglot.backendservice.controller;
 
 import com.smartparkinglot.backendservice.domain.Reservation;
-import com.smartparkinglot.backendservice.services.reservationservice.ReservationService;
+import com.smartparkinglot.backendservice.service.reservationservice.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/reservations")
+@RequestMapping("api/v1/reservations")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-
 public class ReservationController {
     @Autowired
     ReservationService reservationService;

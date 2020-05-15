@@ -1,10 +1,10 @@
-package com.smartparkinglot.backendservice.services.parkinglotservice;
+package com.smartparkinglot.backendservice.service.parkinglotservice;
 
 import com.smartparkinglot.backendservice.domain.ParkingLot;
 import com.smartparkinglot.backendservice.exceptions.AccountActivatedException;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
-import com.smartparkinglot.backendservice.repositories.ParkingLotRepository;
+import com.smartparkinglot.backendservice.repository.ParkingLotRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

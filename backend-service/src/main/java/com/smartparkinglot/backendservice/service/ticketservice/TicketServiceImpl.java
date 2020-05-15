@@ -1,12 +1,12 @@
-package com.smartparkinglot.backendservice.services.ticketservice;
+package com.smartparkinglot.backendservice.service.ticketservice;
 
 import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.domain.Ticket;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
-import com.smartparkinglot.backendservice.repositories.TicketRepository;
-import com.smartparkinglot.backendservice.services.driverservice.DriverService;
-import com.smartparkinglot.backendservice.services.parkinglotservice.ParkingLotService;
-import com.smartparkinglot.backendservice.services.reservationservice.ReservationService;
+import com.smartparkinglot.backendservice.repository.TicketRepository;
+import com.smartparkinglot.backendservice.service.driverservice.DriverService;
+import com.smartparkinglot.backendservice.service.parkinglotservice.ParkingLotService;
+import com.smartparkinglot.backendservice.service.reservationservice.ReservationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

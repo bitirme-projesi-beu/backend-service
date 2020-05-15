@@ -1,11 +1,11 @@
-package com.smartparkinglot.backendservice.services.driverservice;
+package com.smartparkinglot.backendservice.service.driverservice;
 
 import com.smartparkinglot.backendservice.domain.Driver;
 import com.smartparkinglot.backendservice.exceptions.AccountActivatedException;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.exceptions.WrongCredentialsException;
-import com.smartparkinglot.backendservice.repositories.DriverRepository;
+import com.smartparkinglot.backendservice.repository.DriverRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
