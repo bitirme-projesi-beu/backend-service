@@ -1,4 +1,4 @@
-package com.smartparkinglot.backendservice.repositories;
+package com.smartparkinglot.backendservice.repository;
 
 import com.smartparkinglot.backendservice.domain.ParkingLot;
 import org.springframework.data.jpa.repository.JpaRepository;

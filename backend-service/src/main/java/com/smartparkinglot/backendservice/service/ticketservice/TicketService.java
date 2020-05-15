@@ -1,4 +1,4 @@
-package com.smartparkinglot.backendservice.services.ticketservice;
+package com.smartparkinglot.backendservice.service.ticketservice;
 
 import com.smartparkinglot.backendservice.domain.Ticket;
 

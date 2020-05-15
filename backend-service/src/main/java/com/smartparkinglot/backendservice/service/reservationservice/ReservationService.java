@@ -1,4 +1,4 @@
-package com.smartparkinglot.backendservice.services.reservationservice;
+package com.smartparkinglot.backendservice.service.reservationservice;
 
 import com.smartparkinglot.backendservice.domain.Reservation;
 

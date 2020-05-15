@@ -1,4 +1,4 @@
-package com.smartparkinglot.backendservice.services.driverservice;
+package com.smartparkinglot.backendservice.service.driverservice;
 
 import com.smartparkinglot.backendservice.domain.Driver;
 
