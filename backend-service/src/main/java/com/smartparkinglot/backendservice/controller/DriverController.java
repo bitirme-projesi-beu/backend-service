@@ -32,7 +32,7 @@ public class DriverController {
         return new ResponseEntity<Driver>(driverService.addOrSave(driver),HttpStatus.CREATED);
     }
 
-    @GetMapping("/login") // form data olarak gelmeli
+    @PostMapping("/login") // form data olarak gelmeli
     public ResponseEntity<Driver> login(String email, String password){
         return new ResponseEntity(driverService.Login(email, password),HttpStatus.ACCEPTED);
     }
