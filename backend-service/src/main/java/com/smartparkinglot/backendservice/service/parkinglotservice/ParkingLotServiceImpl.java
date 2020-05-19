@@ -1,7 +1,7 @@
 package com.smartparkinglot.backendservice.service.parkinglotservice;
 
 import com.smartparkinglot.backendservice.domain.ParkingLot;
-import com.smartparkinglot.backendservice.exceptions.AccountActivatedException;
+import com.smartparkinglot.backendservice.exceptions.AccountDeactivatedException;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.repository.ParkingLotRepository;
@@ -47,7 +47,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             if (found_parking_lot.getIsDeleted()){
                 found_parking_lot.setIsDeleted(false);
                 parkingLotRepository.save(found_parking_lot);
-                throw new AccountActivatedException("Account reactivated again.");
+                throw new AccountDeactivatedException("Account reactivated again.");
             }
             throw new AlreadyExistsException("Parking lot already exists with given credentials");
         }else{
