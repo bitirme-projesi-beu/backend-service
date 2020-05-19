@@ -45,9 +45,11 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         if (parkingLot == null && parkingLotRepository.findByName(parkingLotName) != null ){
             ParkingLot found_parking_lot = parkingLotRepository.findByName(parkingLotName);
             if (found_parking_lot.getIsDeleted()){
+                /*
                 found_parking_lot.setIsDeleted(false);
                 parkingLotRepository.save(found_parking_lot);
-                throw new AccountDeactivatedException("Account reactivated again.");
+                */
+                throw new AccountDeactivatedException("Parkinglot is deleted, reach to admin to reactivate it again.");
             }
             throw new AlreadyExistsException("Parking lot already exists with given credentials");
         }else{
