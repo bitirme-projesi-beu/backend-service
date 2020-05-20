@@ -1,7 +1,7 @@
 package com.smartparkinglot.backendservice.service.driverservice;
 
 import com.smartparkinglot.backendservice.domain.Driver;
-import com.smartparkinglot.backendservice.exceptions.AccountActivatedException;
+import com.smartparkinglot.backendservice.exceptions.AccountDeactivatedException;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.exceptions.WrongCredentialsException;
@@ -44,9 +44,11 @@ public class DriverServiceImpl implements DriverService {
         if (driver_id == null && driverRepository.findByEmail(driver_email) != null ){
             Driver found_driver = driverRepository.findByEmail(driver_email);
             if (found_driver.getIsDeleted()){
+                /*
                 found_driver.setIsDeleted(false);
                 driverRepository.save(found_driver);
-                throw new AccountActivatedException("Account reactivated again.");
+                 */
+                throw new AccountDeactivatedException("Account is deleted. Please reach the admin for reactivating the account.");
             }
             throw new AlreadyExistsException("User already exists with given credentials");
         }else{
@@ -69,6 +71,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public void setDeactive(Driver driver) {
         Driver driverb = driverRepository.findById(driver.getId()).get();
+        if (driverb == null) throw new NotFoundException("Driver not found with id:"+driver.getId());
         driverb.setIsDeleted(true);
         driverRepository.save(driverb);
     }
