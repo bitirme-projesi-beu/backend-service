@@ -29,8 +29,6 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     public ParkingLot getById(Long id) {
         ParkingLot parkingLot = parkingLotRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Parking Lot not found with id: "+id));
-
-
         return parkingLot;
 
     }
