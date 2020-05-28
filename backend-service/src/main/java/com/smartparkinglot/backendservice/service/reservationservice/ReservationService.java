@@ -2,6 +2,7 @@ package com.smartparkinglot.backendservice.service.reservationservice;
 
 import com.smartparkinglot.backendservice.domain.Reservation;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ReservationService {
@@ -33,7 +34,7 @@ public interface ReservationService {
     /*
         in case of user cancels her reservation or enters parking lot this function
      */
-    Reservation updateReservation(Reservation reservation);
+    Reservation updateReservation(Reservation reservation, LocalDateTime now);
 
     /*
         returns driver reservations

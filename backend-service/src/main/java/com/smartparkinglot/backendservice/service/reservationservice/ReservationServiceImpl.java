@@ -59,11 +59,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Reservation updateReservation(Reservation reservation) {
+    public Reservation updateReservation(Reservation reservation,LocalDateTime now) {
 
         // aktif bi rezervasyon cagrılmıs otoparka giriş yapılıyordur
         LocalDateTime createdAt = reservation.getCreatedAt();
-        LocalDateTime deactivatedAt = LocalDateTime.now();
+        LocalDateTime deactivatedAt = now;
         reservation.setDeactivatedAt(deactivatedAt);
         Duration duration = Duration.between(createdAt,deactivatedAt);
         Long hoursPast = duration.toHours(); // otoparka gelene kadar geçen zaman veya iptal edilene kadar geçen zaman

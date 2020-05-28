@@ -7,11 +7,13 @@ import com.smartparkinglot.backendservice.repository.TicketRepository;
 import com.smartparkinglot.backendservice.service.driverservice.DriverService;
 import com.smartparkinglot.backendservice.service.parkinglotservice.ParkingLotService;
 import com.smartparkinglot.backendservice.service.reservationservice.ReservationService;
+import jdk.vm.ci.meta.Local;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -80,41 +82,30 @@ public class TicketServiceImpl implements TicketService {
     public Ticket addOrSave(Ticket ticket) {
         Long parkingLotId = ticket.getParkingLotId();
         if (parkingLotId == null) throw new NotFoundException("There must be a parking lot id attachted to ticket");
-        if ( !parkingLotService.isExistsById(parkingLotId) ) throw new NotFoundException("There must be a valid parking lot id attachted to ticket");
+        if (!parkingLotService.isExistsById(parkingLotId)) throw new NotFoundException("There must be a valid parking lot id attachted to ticket");
+
         String plate = ticket.getPlate();
         if (plate.trim().equals("") || plate == null) throw new NotFoundException("There must be a plate attachted to ticket");
-
-        //reservation check
-        Reservation reservation = reservationService.findByParkingLotIdAndPlateAndIsActiveTrue(parkingLotId,plate);
         Double hourlyWage = parkingLotService.getById(parkingLotId).getHourlyWage();
-        Ticket isSomeOneExiting = ticketRepository.findByParkingLotIdAndPlateAndIsItInsideTrue(parkingLotId,plate);
-        // ticket dan gelen plaka ve otopark id ile içerde isitinside aktif varsa misafir çıkıyor demek
-        if (reservation != null){
-            // we have a reservation and its still active so that means driver is entering parking lot
-            reservation = reservationService.updateReservation(reservation);
-            ticket.setDriverId(reservation.getDriverId());
-            ticket.setCost(reservation.getCost());
-            ticket.setIsItInside(true);
-            return ticketRepository.save(ticket);
-        }else if(isSomeOneExiting != null) {
-            LocalDateTime enterTime = isSomeOneExiting.getCreatedAt();
-            LocalDateTime exitTime = ticket.getCreatedAt();             // burda degıl rezervasyon zamanlarında sıkıntı olabilir
-            Long hoursPast = Duration.between(enterTime,exitTime).toHours();
-            isSomeOneExiting.setExitedAt(exitTime);
-            isSomeOneExiting.addToTheCost(hourlyWage * (hoursPast+1));
-            isSomeOneExiting.setIsItInside(false);
-            return ticketRepository.save(isSomeOneExiting);
-        } //if(ticket.getIsItInside() == null)
+
+        Reservation activeReservation = reservationService.findByParkingLotIdAndPlateAndIsActiveTrue(parkingLotId,plate);
+        Ticket someoneExiting = ticketRepository.findByParkingLotIdAndPlateAndIsItInsideTrue(parkingLotId,plate);
+
+        if (activeReservation != null){
+            activeReservation = reservationService.updateReservation(activeReservation,ticket.getCreatedAt()); // end the reservation and prepare to start a ticket
+            Ticket startingTicket = startTheTicket(ticket,activeReservation.getDriverId(),activeReservation.getCost(),true);
+            return ticketRepository.save(startingTicket);
+        }
+        else if(someoneExiting != null) {
+            Ticket exitingTicket = endTheTicket(someoneExiting, hourlyWage, ticket.getCreatedAt());
+            return ticketRepository.save(exitingTicket);
+        }
         else {
             // if there is no active res with that plate in that parking lot and if there is no exit case it means guest entering parking lot
-            ticket.setDriverId(Long.valueOf(-1));
-            ticket.setIsItInside(true);
-            ticket.setCost(0.0);
-            return ticketRepository.save(ticket);
-            // manual payment.
+            Ticket startingGuestTicket = startTheTicket(ticket,Long.valueOf(-1),0.0,true);
+            return ticketRepository.save(startingGuestTicket);
         }
     }
-
     @Override
     public void deleteTicket(Ticket ticket) {
         if (ticket == null){
@@ -123,5 +114,23 @@ public class TicketServiceImpl implements TicketService {
             Long id = ticket.getId();
             ticketRepository.deleteById(id);
         }
+    }
+
+
+    private Ticket startTheTicket(Ticket ticket,Long driverId, Double cost, boolean isItInside) {
+        ticket.setDriverId(driverId);
+        ticket.setCost(cost);
+        ticket.setIsItInside(isItInside);
+        return ticket;
+    }
+
+    private Ticket endTheTicket(Ticket isSomeOneExiting, Double hourlyWage, LocalDateTime now) {
+        LocalDateTime enterTime = isSomeOneExiting.getCreatedAt();
+        LocalDateTime exitTime = now;
+        Long hoursPast = Duration.between(enterTime,exitTime).toHours();
+        isSomeOneExiting.setExitedAt(exitTime);
+        isSomeOneExiting.addToTheCost(hourlyWage * (hoursPast+1));
+        isSomeOneExiting.setIsItInside(false);
+        return isSomeOneExiting;
     }
 }
