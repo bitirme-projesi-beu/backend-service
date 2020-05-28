@@ -2,7 +2,6 @@ package com.smartparkinglot.backendservice.service.ticketservice;
 
 import com.smartparkinglot.backendservice.domain.Ticket;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TicketService {

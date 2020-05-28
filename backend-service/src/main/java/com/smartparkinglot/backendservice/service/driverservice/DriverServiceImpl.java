@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -20,9 +21,7 @@ public class DriverServiceImpl implements DriverService {
     @Override
     public List<Driver> getAllDrivers() {
         List<Driver> driverList = driverRepository.findAll();
-        if (driverList == null){
-            throw new NullPointerException();
-        }
+
         return driverList;
     }
 
@@ -30,7 +29,6 @@ public class DriverServiceImpl implements DriverService {
     public Driver getById(Long id) {
         Driver driver = driverRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Driver not found with id: "+id));
-
 
         return driver;
 
@@ -41,7 +39,7 @@ public class DriverServiceImpl implements DriverService {
         Long driver_id = driver.getId();
         String driver_email = driver.getEmail();
 
-        if (driver_id == null && driverRepository.findByEmail(driver_email) != null ){
+        if (driver_id == null && driverRepository.isExistsByEmail(driver_email) ){
             Driver found_driver = driverRepository.findByEmail(driver_email);
             if (found_driver.getIsDeleted()){
                 /*
