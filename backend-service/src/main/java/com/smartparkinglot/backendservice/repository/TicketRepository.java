@@ -9,5 +9,4 @@ public interface TicketRepository extends JpaRepository<Ticket,Long> {
     List<Ticket> findByParkingLotId(Long parkingLotId);
     List<Ticket> findByDriverId(Long driverId);
     Ticket findByParkingLotIdAndPlateAndIsItInsideTrue(Long parkingLotId, String plate);
-
 }

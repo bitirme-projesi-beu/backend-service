@@ -2,6 +2,8 @@ package com.smartparkinglot.backendservice.controller;
 
 import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.service.reservationservice.ReservationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,9 +47,18 @@ public class ReservationController {
         return new ResponseEntity<Reservation>(reservationService.addOrSave(reservation),HttpStatus.CREATED);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/admin-delete")
+    @Operation(summary = "DONT USE it for deletion")
     public ResponseEntity deleteReservation(@RequestBody Reservation reservation){
         reservationService.deleteById(reservation);
+        return new ResponseEntity( HttpStatus.OK);
+    }
+
+
+    @DeleteMapping
+    @Operation(summary = "USE it for deletion")
+    public ResponseEntity cancelReservation(@RequestBody Reservation reservation){
+        reservationService.cancelReservation(reservation);
         return new ResponseEntity( HttpStatus.OK);
     }
 }

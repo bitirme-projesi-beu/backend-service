@@ -17,5 +17,8 @@ public interface TicketService {
     Ticket addOrSave(Ticket ticket);
     void deleteTicket(Ticket ticket);
 
+    Ticket rateTicket(Ticket ticket);
+
+
 
 }

@@ -2,6 +2,8 @@ package com.smartparkinglot.backendservice.controller;
 
 import com.smartparkinglot.backendservice.domain.Ticket;
 import com.smartparkinglot.backendservice.service.ticketservice.TicketService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +32,16 @@ public class TicketController {
     public ResponseEntity<Ticket> addOrSave(@RequestBody Ticket ticket){
         return new ResponseEntity<Ticket>(ticketService.addOrSave(ticket),HttpStatus.CREATED);
     }
+
+    @PostMapping("rate-parking-lot")
+    @Operation(summary = "send ticket with rate on it")
+    public ResponseEntity<Ticket> rateTicket(@RequestBody Ticket ticket){
+        return new ResponseEntity<Ticket>(ticketService.rateTicket(ticket),HttpStatus.CREATED);
+    }
+
+
     @DeleteMapping
+    @Operation(summary = "DONT USE it for deletion")
     public ResponseEntity deleteTicket(@RequestBody Ticket ticket){
         ticketService.deleteTicket(ticket);
         return new ResponseEntity( HttpStatus.OK);

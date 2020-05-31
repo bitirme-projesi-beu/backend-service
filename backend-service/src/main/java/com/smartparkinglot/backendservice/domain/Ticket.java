@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,17 +16,19 @@ public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NonNull
+    @NonNull @NotNull
     private Long parkingLotId;
-    @NonNull
+    @NonNull @NotNull
     private Long driverId; // in case of guest it will be -1
-    @NonNull
+    @NonNull @NotNull
     private String plate;
+    @NonNull @NotNull
     private LocalDateTime createdAt;
     private LocalDateTime exitedAt;
     @NonNull
     private Boolean isItInside;
     private Double cost;
+    private Integer rating;
 
 
 
