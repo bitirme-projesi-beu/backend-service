@@ -8,7 +8,6 @@ import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.repository.ParkingLotRepository;
 import com.smartparkinglot.backendservice.service.ticketservice.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

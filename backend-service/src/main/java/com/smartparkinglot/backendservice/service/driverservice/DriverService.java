@@ -1,15 +1,15 @@
 package com.smartparkinglot.backendservice.service.driverservice;
 
-import com.smartparkinglot.backendservice.domain.Driver;
+import com.smartparkinglot.backendservice.domain.Account;
 
 import java.util.List;
 
 public interface DriverService {
-    List<Driver> getAllDrivers();
-    Driver getById(Long id);
-    Driver addOrSave(Driver driver);
-    void deleteDriver(Driver driver);
-    void setDeactive(Driver driver);
-    Driver Login(String email, String password);
+    List<Account> getAllDrivers();
+    Account getById(Long id);
+    Account addOrSave(Account account);
+    void deleteDriver(Account account);
+    void setDeactive(Account account);
+    String Login(Account account);
     Boolean isExistsById(Long id);
 }
