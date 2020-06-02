@@ -48,7 +48,7 @@ public class ReservationController {
     }
 
     @DeleteMapping("/admin-delete")
-    @Operation(summary = "DONT USE it for deletion")
+    @Operation(summary = "deletes reservation for admin")
     public ResponseEntity deleteReservation(@RequestBody Reservation reservation){
         reservationService.deleteById(reservation);
         return new ResponseEntity( HttpStatus.OK);
@@ -56,7 +56,7 @@ public class ReservationController {
 
 
     @DeleteMapping
-    @Operation(summary = "USE it for deletion")
+    @Operation(summary = "cancels reservation for end-user")
     public ResponseEntity cancelReservation(@RequestBody Reservation reservation){
         reservationService.cancelReservation(reservation);
         return new ResponseEntity( HttpStatus.OK);

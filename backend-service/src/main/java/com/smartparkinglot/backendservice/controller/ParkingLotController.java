@@ -36,14 +36,14 @@ public class ParkingLotController {
 
 
     @DeleteMapping()
-    @Operation(summary = "USE it for deletion")
+    @Operation(summary = "deactivates parking lot for end-user")
     public ResponseEntity deactiveParkingLot(@RequestBody ParkingLot parkingLot){
         parkingLotService.setDeactive(parkingLot);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("admin-delete")
-    @Operation(summary = "DONT USE it for deletion")
+    @Operation(summary = "deletes parking lot for admin")
     public ResponseEntity deleteParkingLot(@RequestBody ParkingLot parkingLot){
         parkingLotService.deleteParkingLot(parkingLot);
         return new ResponseEntity(HttpStatus.OK);

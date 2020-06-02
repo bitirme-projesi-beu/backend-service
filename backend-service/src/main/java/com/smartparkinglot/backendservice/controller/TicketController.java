@@ -34,14 +34,14 @@ public class TicketController {
     }
 
     @PostMapping("rate-parking-lot")
-    @Operation(summary = "send ticket with rate on it")
+    @Operation(summary = "review your experience for parking lot service")
     public ResponseEntity<Ticket> rateTicket(@RequestBody Ticket ticket){
         return new ResponseEntity<Ticket>(ticketService.rateTicket(ticket),HttpStatus.CREATED);
     }
 
 
     @DeleteMapping
-    @Operation(summary = "DONT USE it for deletion")
+    @Operation(summary = "deletes ticket for admin",description = "end user shouldn't use this endpoint")
     public ResponseEntity deleteTicket(@RequestBody Ticket ticket){
         ticketService.deleteTicket(ticket);
         return new ResponseEntity( HttpStatus.OK);

@@ -40,14 +40,14 @@ public class DriverController {
     }
 
     @DeleteMapping("/delete")
-    @Operation(summary = "use it for driver deletion")
+    @Operation(summary = "deactivates user for end-user ")
     public ResponseEntity deactiveDriver(@RequestBody Driver driver){
         driverService.setDeactive(driver);
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("admin-delete")
-    @Operation(summary = "DONT USE it for driver deletion")
+    @Operation(summary = "deletes user for admin")
     public ResponseEntity deleteDriver(@RequestBody Driver driver){
         driverService.deleteDriver(driver);
         return new ResponseEntity(HttpStatus.OK);
