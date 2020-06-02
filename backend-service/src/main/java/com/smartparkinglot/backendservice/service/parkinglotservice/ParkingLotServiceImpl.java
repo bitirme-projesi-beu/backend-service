@@ -1,11 +1,14 @@
 package com.smartparkinglot.backendservice.service.parkinglotservice;
 
 import com.smartparkinglot.backendservice.domain.ParkingLot;
+import com.smartparkinglot.backendservice.domain.Ticket;
 import com.smartparkinglot.backendservice.exceptions.AccountDeactivatedException;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.repository.ParkingLotRepository;
+import com.smartparkinglot.backendservice.service.ticketservice.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +18,8 @@ import java.util.List;
 public class ParkingLotServiceImpl implements ParkingLotService {
     @Autowired
     ParkingLotRepository parkingLotRepository;
+    @Autowired
+    TicketService ticketService;
 
     @Override
     public List<ParkingLot> getAllParkingLots() {
@@ -52,6 +57,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             throw new AlreadyExistsException("Parking lot already exists with given credentials");
         }else{
             parkingLot.setIsDeleted(false);
+            parkingLot.setActiveCapacity(parkingLot.getMaxCapacity());
             return parkingLotRepository.save(parkingLot);
         }
     }
@@ -77,5 +83,24 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     @Override
     public Boolean isExistsById(Long parkinglotId) {
         return parkingLotRepository.existsById(parkinglotId);
+    }
+
+    @Override
+    public void updateParkingLotActiveCapacity(ParkingLot parkingLot, Integer addition) {
+        parkingLot.setActiveCapacity(parkingLot.getActiveCapacity()+ (addition));
+        parkingLotRepository.save(parkingLot);
+    }
+
+    @Override
+    public void updateRating(Long id){
+        Double total = 0.0;
+        for (Ticket ticket: ticketService.getParkingLotTickets(id)){
+            total += ticket.getRating();
+        }
+        total /= 5.0;
+        total = (double)(Math.round(total*100)/100);
+        ParkingLot parkingLot = parkingLotRepository.findById(id).get();
+        parkingLot.setRating(total);
+        parkingLotRepository.save(parkingLot);
     }
 }

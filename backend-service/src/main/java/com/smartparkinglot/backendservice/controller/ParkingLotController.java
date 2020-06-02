@@ -3,6 +3,8 @@ package com.smartparkinglot.backendservice.controller;
 
 import com.smartparkinglot.backendservice.domain.ParkingLot;
 import com.smartparkinglot.backendservice.service.parkinglotservice.ParkingLotService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +36,14 @@ public class ParkingLotController {
 
 
     @DeleteMapping()
+    @Operation(summary = "deactivates parking lot for end-user")
     public ResponseEntity deactiveParkingLot(@RequestBody ParkingLot parkingLot){
         parkingLotService.setDeactive(parkingLot);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @DeleteMapping("delete")
+    @DeleteMapping("admin-delete")
+    @Operation(summary = "deletes parking lot for admin")
     public ResponseEntity deleteParkingLot(@RequestBody ParkingLot parkingLot){
         parkingLotService.deleteParkingLot(parkingLot);
         return new ResponseEntity(HttpStatus.OK);

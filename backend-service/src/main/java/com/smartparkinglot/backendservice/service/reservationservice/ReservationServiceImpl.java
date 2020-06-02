@@ -1,5 +1,6 @@
 package com.smartparkinglot.backendservice.service.reservationservice;
 
+import com.smartparkinglot.backendservice.domain.ParkingLot;
 import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
@@ -51,6 +52,10 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation activeRes = reservationRepository.findByDriverIdAndIsActiveTrue(reservation.getDriverId());
         if (activeRes != null) throw new AlreadyExistsException("Already have an active reservation with this driver!");
+        if (parkingLotService.getById(reservation.getParkingLotId()).getActiveCapacity() <= 0) throw new NotFoundException("Parking lot is full");
+
+        ParkingLot parkingLot = parkingLotService.getById(reservation.getParkingLotId());
+        parkingLotService.updateParkingLotActiveCapacity(parkingLot,-1);
 
         reservation.setActive(true);
         reservation.setHourlyWage(parkingLotService.getById(reservation.getParkingLotId()).getHourlyWage() / 3);
@@ -69,8 +74,28 @@ public class ReservationServiceImpl implements ReservationService {
         Long hoursPast = duration.toHours(); // otoparka gelene kadar geçen zaman veya iptal edilene kadar geçen zaman
         reservation.setCost((hoursPast +1) * reservation.getHourlyWage() ); // ücret otopark saatlik ücretinin 3te1 i olarak atanır
         reservation.setActive(false); // deaktif edilir
+
+        ParkingLot parkingLot = parkingLotService.getById(reservation.getParkingLotId());
+        parkingLotService.updateParkingLotActiveCapacity(parkingLot,1);
+
         return reservationRepository.save(reservation); // geri gönderilir
 
+    }
+
+    @Override
+    public void cancelReservation(Reservation reservation) {
+        ParkingLot parkingLot = parkingLotService.getById(reservation.getParkingLotId());
+        parkingLotService.updateParkingLotActiveCapacity(parkingLot,1);
+
+        LocalDateTime createdAt = reservation.getCreatedAt();
+        LocalDateTime deactivatedAt = LocalDateTime.now();
+        reservation.setDeactivatedAt(deactivatedAt);
+        Duration duration = Duration.between(createdAt,deactivatedAt);
+        Long hoursPast = duration.toHours(); // otoparka gelene kadar geçen zaman veya iptal edilene kadar geçen zaman
+        reservation.setCost((hoursPast +1) * reservation.getHourlyWage() ); // ücret otopark saatlik ücretinin 3te1 i olarak atanır
+        reservation.setActive(false); // deaktif edilir
+
+        reservationRepository.save(reservation);
     }
 
     @Override
@@ -78,6 +103,9 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation == null){
             throw new NullPointerException();
         }else{
+            ParkingLot parkingLot = parkingLotService.getById(reservation.getParkingLotId());
+            parkingLotService.updateParkingLotActiveCapacity(parkingLot,1);
+
             Long id =reservation.getId();
             reservationRepository.deleteById(id);
         }

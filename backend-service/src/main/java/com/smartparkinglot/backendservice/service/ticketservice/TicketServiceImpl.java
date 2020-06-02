@@ -1,5 +1,6 @@
 package com.smartparkinglot.backendservice.service.ticketservice;
 
+import com.smartparkinglot.backendservice.domain.ParkingLot;
 import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.domain.Ticket;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
@@ -109,13 +110,28 @@ public class TicketServiceImpl implements TicketService {
         if (ticket == null){
             throw new NotFoundException("Ticket is empty");
         }else{
+            ParkingLot parkingLot = parkingLotService.getById(ticket.getParkingLotId());
+            parkingLotService.updateParkingLotActiveCapacity(parkingLot,1);
+
             Long id = ticket.getId();
             ticketRepository.deleteById(id);
         }
     }
 
+    @Override
+    public Ticket rateTicket(Ticket ticket) {
+       Ticket ticket1 = ticketRepository.save(ticket);
+       parkingLotService.updateRating(ticket.getParkingLotId());
+       return ticket1;
+    }
+
 
     private Ticket startTheTicket(Ticket ticket,Long driverId, Double cost, boolean isItInside) {
+
+        ParkingLot parkingLot = parkingLotService.getById(ticket.getParkingLotId());
+        if (parkingLot.getActiveCapacity() == 0) throw new NotFoundException("Parkinglot is full!");
+        parkingLotService.updateParkingLotActiveCapacity(parkingLot,-1);
+
         ticket.setDriverId(driverId);
         ticket.setCost(cost);
         ticket.setIsItInside(isItInside);
@@ -129,6 +145,11 @@ public class TicketServiceImpl implements TicketService {
         isSomeOneExiting.setExitedAt(exitTime);
         isSomeOneExiting.addToTheCost(hourlyWage * (hoursPast+1));
         isSomeOneExiting.setIsItInside(false);
+
+        ParkingLot parkingLot = parkingLotService.getById(isSomeOneExiting.getParkingLotId());
+        parkingLotService.updateParkingLotActiveCapacity(parkingLot,1);
+
+
         return isSomeOneExiting;
     }
 }
