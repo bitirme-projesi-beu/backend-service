@@ -104,7 +104,7 @@ public class AccountServiceImpl implements AccountService {
             throw new WrongCredentialsException("Wrong credentials");
         }
 
-        final UserDetails userDetails =userDetailsService.loadUserByUsername(account.getEmail());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(account.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
         return token;
 

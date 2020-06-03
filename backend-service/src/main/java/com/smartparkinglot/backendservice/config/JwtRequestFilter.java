@@ -35,9 +35,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        System.out.println("headertype:::"+HEADER_TYPE);
         final String requestTokenHeader = request.getHeader(HEADER_TYPE);
-        System.out.println("requesttokenheader::"+requestTokenHeader);
         String username = null;
         String jwtToken = null;
         // JWT Token is in the form "Bearer token". Remove Bearer word and get

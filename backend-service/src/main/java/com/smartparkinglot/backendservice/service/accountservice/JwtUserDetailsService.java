@@ -32,18 +32,17 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Value("${adminrole}")
     private String ADMIN_ROLE;
 
-    @Value("${tokenprefix}")
-    private String hwt;
-
-
-
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         if (email.equals(ADMIN_USERNAME)){
             List<GrantedAuthority> roles = new ArrayList<>();
-            System.out.println("tokenprefix:::"+hwt);
-            roles.add((GrantedAuthority) () -> ADMIN_ROLE);
+            roles.add(new GrantedAuthority() {
+                @Override
+                public String getAuthority() {
+                    return ADMIN_ROLE;
+                }
+            });
             String PASSWORD =  new BCryptPasswordEncoder().encode(ADMIN_PASSWORD);
             return new User(ADMIN_USERNAME,PASSWORD, roles );
         }

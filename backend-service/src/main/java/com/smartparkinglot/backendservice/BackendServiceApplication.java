@@ -21,10 +21,7 @@ public class BackendServiceApplication {
 								new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
 	}
 
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(BackendServiceApplication.class, args);
 	}
