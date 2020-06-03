@@ -1,13 +1,16 @@
 package com.smartparkinglot.backendservice.service.reservationservice;
 
+import com.smartparkinglot.backendservice.domain.Account;
 import com.smartparkinglot.backendservice.domain.ParkingLot;
 import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.repository.ReservationRepository;
-import com.smartparkinglot.backendservice.service.driverservice.DriverService;
+import com.smartparkinglot.backendservice.service.accountservice.AccountService;
 import com.smartparkinglot.backendservice.service.parkinglotservice.ParkingLotService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -21,7 +24,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     ReservationRepository reservationRepository;
     @Autowired
-    DriverService driverService;
+    AccountService accountService;
     @Autowired
     ParkingLotService parkingLotService;
 
@@ -47,16 +50,21 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public Reservation addOrSave(Reservation reservation) {
-        // otoparkın varlığını kontrol etmelimiyim, otopark yoksa zaten boş liste döndürüyor ??
-        if (!driverService.isExistsById(reservation.getDriverId())) throw new NotFoundException("There isn't any driver registered with id:"+reservation.getDriverId());
 
-        Reservation activeRes = reservationRepository.findByDriverIdAndIsActiveTrue(reservation.getDriverId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account)authentication.getPrincipal();
+
+        // otoparkın varlığını kontrol etmelimiyim, otopark yoksa zaten boş liste döndürüyor ??
+        if (!accountService.isExistsById(account.getId().longValue())) throw new NotFoundException("There isn't any driver registered with id:"+reservation.getDriverId());
+
+        Reservation activeRes = reservationRepository.findByDriverIdAndIsActiveTrue(account.getId().longValue());
         if (activeRes != null) throw new AlreadyExistsException("Already have an active reservation with this driver!");
         if (parkingLotService.getById(reservation.getParkingLotId()).getActiveCapacity() <= 0) throw new NotFoundException("Parking lot is full");
 
         ParkingLot parkingLot = parkingLotService.getById(reservation.getParkingLotId());
         parkingLotService.updateParkingLotActiveCapacity(parkingLot,-1);
 
+        reservation.setDriverId(account.getId().longValue());
         reservation.setActive(true);
         reservation.setHourlyWage(parkingLotService.getById(reservation.getParkingLotId()).getHourlyWage() / 3);
         return reservationRepository.save(reservation);
@@ -114,7 +122,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<Reservation> getDriverReservations(Long driver_id) {
         // kullanıcının varlığını kontrol etmelimiyim, otopark yoksa zaten boş liste döndürüyor ??
-        if (!driverService.isExistsById(driver_id)) throw new NotFoundException("There isn't any driver registered with id:"+driver_id);
+        if (!accountService.isExistsById(driver_id)) throw new NotFoundException("There isn't any driver registered with id:"+driver_id);
         List<Reservation> res = reservationRepository.findByDriverId(driver_id);
 
         if (res == null) throw new NotFoundException("No reservation under given driver id:"+driver_id);
@@ -129,13 +137,23 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getParkingLotReservations(Long parkingLotId) {
-        // future work -> gelen parkinglotid ile parkinglot bulunup owner_id'si bulunur ve isteği yapan otoparkın id'si ile
-        // karşılaştırılır böylece kullanıcının sadece kendi otoparkına erişimi bulunur
+    public List<Reservation> getDriverReservationsForDriver() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account)authentication.getPrincipal();
 
+        List<Reservation> reservations = reservationRepository.findByDriverId(account.getId());
+        if (reservations == null) throw new NotFoundException("no reservations to show with that id:"+account.getId().toString());
+        return  reservations;
+    }
 
-        if (!parkingLotService.isExistsById(parkingLotId)) throw new NotFoundException("There isn't any parking lot registered with id:"+parkingLotId);
-        return reservationRepository.findByParkingLotId(parkingLotId);
+    @Override
+    public Reservation getDriverReservationForDriver(Long res_id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account)authentication.getPrincipal();
+
+        Reservation reservation = reservationRepository.findById(res_id).orElseThrow(() -> new NotFoundException("not found with that res id:"+res_id));
+        if (account.getId() != reservation.getDriverId()) throw new NotFoundException("this res has no connection with this driver id:"+account.getId());
+        return reservation;
     }
 
     @Override
@@ -147,9 +165,18 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
+    @Override
+    public List<Reservation> getParkingLotReservations(Long parkingLotId) {
+        if (!parkingLotService.isExistsById(parkingLotId)) throw new NotFoundException("There isn't any parking lot registered with id:"+parkingLotId);
+        List<Reservation> reservations = reservationRepository.findByParkingLotId(parkingLotId);
+        if (reservations == null ) throw new NotFoundException("There is no reservation under this parking lot id:"+parkingLotId);
+        return reservations;
+    }
+
 
     @Override
     public Reservation findByParkingLotIdAndPlateAndIsActiveTrue(Long parkingLotId, String plate) {
         return reservationRepository.findByParkingLotIdAndPlateAndIsActiveTrue(parkingLotId,plate);
     }
+
 }

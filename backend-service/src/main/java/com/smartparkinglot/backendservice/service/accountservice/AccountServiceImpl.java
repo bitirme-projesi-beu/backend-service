@@ -1,4 +1,4 @@
-package com.smartparkinglot.backendservice.service.driverservice;
+package com.smartparkinglot.backendservice.service.accountservice;
 
 import com.smartparkinglot.backendservice.config.JwtTokenUtil;
 import com.smartparkinglot.backendservice.domain.Account;
@@ -6,7 +6,7 @@ import com.smartparkinglot.backendservice.exceptions.AccountDeactivatedException
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.exceptions.WrongCredentialsException;
-import com.smartparkinglot.backendservice.repository.DriverRepository;
+import com.smartparkinglot.backendservice.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -20,9 +20,9 @@ import java.util.List;
 
 
 @Service
-public class DriverServiceImpl implements DriverService {
+public class AccountServiceImpl implements AccountService {
     @Autowired
-    DriverRepository driverRepository;
+    AccountRepository accountRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -32,8 +32,8 @@ public class DriverServiceImpl implements DriverService {
     private JwtUserDetailsService userDetailsService;
 
     @Override
-    public List<Account> getAllDrivers() {
-        List<Account> accountList = driverRepository.findAll();
+    public List<Account> getAllAccounts() {
+        List<Account> accountList = accountRepository.findAll();
         if (accountList == null){
             throw new NullPointerException();
         }
@@ -42,7 +42,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Account getById(Long id) {
-        Account account = driverRepository.findById(id).orElseThrow(
+        Account account = accountRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Account not found with id: "+id));
 
 
@@ -52,15 +52,15 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Account addOrSave(Account account) {
-        Long driver_id = account.getId();
-        String driver_email = account.getEmail();
+        Long accountId = account.getId();
+        String accountMail = account.getEmail();
 
-        if (driver_id == null && driverRepository.findByEmail(driver_email) != null ){
-            Account found_account = driverRepository.findByEmail(driver_email);
+        if (accountId == null && accountRepository.findByEmail(accountMail) != null ){
+            Account found_account = accountRepository.findByEmail(accountMail);
             if (found_account.getIsDeleted()){
                 /*
                 found_account.setIsDeleted(false);
-                driverRepository.save(found_account);
+                accountRepository.save(found_account);
                  */
                 throw new AccountDeactivatedException("Account is deleted. Please reach the admin for reactivating the account.");
             }
@@ -68,16 +68,16 @@ public class DriverServiceImpl implements DriverService {
         }else{
             account.setPassword(new BCryptPasswordEncoder().encode(account.getPassword()));
             account.setIsDeleted(false);
-            return driverRepository.save(account);
+            return accountRepository.save(account);
         }
     }
 
     @Override
-    public void deleteDriver(Account account) {
+    public void deleteAccount(Account account) {
         if (account.getId() == null)
             throw new NotFoundException("There is no id attached to account");
         try{
-            driverRepository.deleteById(account.getId());
+            accountRepository.deleteById(account.getId());
         }catch (Exception ex){
             System.out.println(ex.getLocalizedMessage());
         }
@@ -85,10 +85,10 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public void setDeactive(Account account) {
-        Account driverb = driverRepository.findById(account.getId()).get();
-        if (driverb == null) throw new NotFoundException("Account not found with id:"+ account.getId());
-        driverb.setIsDeleted(true);
-        driverRepository.save(driverb);
+        Account searchResultAccount = accountRepository.findById(account.getId()).get();
+        if (searchResultAccount == null) throw new NotFoundException("Account not found with id:"+ account.getId());
+        searchResultAccount.setIsDeleted(true);
+        accountRepository.save(searchResultAccount);
     }
 
 
@@ -112,7 +112,7 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public Boolean isExistsById(Long id) {
-        return driverRepository.existsById(id);
+        return accountRepository.existsById(id);
     }
 
 }

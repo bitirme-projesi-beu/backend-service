@@ -18,7 +18,7 @@ public class Ticket {
     private Long id;
     @NonNull @NotNull
     private Long parkingLotId;
-    @NonNull @NotNull
+    @NonNull
     private Long driverId; // in case of guest it will be -1
     @NonNull @NotNull
     private String plate;

@@ -30,14 +30,14 @@
 
 				</dependency>
 			</dependencies>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 		</profile>
 
 
 		<profile>
 			<id>prod</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<dependencies>
 
 				<dependency>

@@ -1,5 +1,6 @@
 package com.smartparkinglot.backendservice.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,15 +15,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.smartparkinglot.backendservice.config.SecurityConstraints.LOGIN_URL;
-import static com.smartparkinglot.backendservice.config.SecurityConstraints.SIGN_UP_URL;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-
-
+    @Value("${adminusername}")
+    private String ADMIN_USERNAME;
+    @Value("${adminpassword}")
+    private String ADMIN_PASSWORD;
+    @Value("${signupurl}")
+    private String SIGN_UP_URL;
+    @Value("${loginurl}")
+    private String LOGIN_URL;
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private UserDetailsService jwtUserDetailsService;
     private JwtRequestFilter jwtRequestFilter;
@@ -39,6 +45,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // user for matching credentials
         // Use BCryptPasswordEncoder
         auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
+        auth.inMemoryAuthentication().withUser(ADMIN_USERNAME).password(ADMIN_PASSWORD).roles("ADMIN").and().passwordEncoder(passwordEncoder());
+
     }
 
 
@@ -59,6 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf().disable()
                 // dont authenticate this particular request
                     .authorizeRequests()
+                    .antMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                     .antMatchers(SIGN_UP_URL,LOGIN_URL).permitAll()
                 // all other requests need to be authenticated
                 .and()

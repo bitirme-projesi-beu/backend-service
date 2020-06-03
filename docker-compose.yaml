@@ -23,6 +23,21 @@ services:
           - database
         environment:
           TZ: "Asia/Istanbul"
+          SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
+          SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
+          SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+          SECRET: "${SECRET}"
+          SERVER_PORT: "${SERVER_PORT}"
+          SIGNUPURL: "${SIGNUPURL}"
+          LOGINURL: "${LOGINURL}"
+          JWTTOKENVALIDITY: ${JWTTOKENVALIDITY}
+          TOKENPREFIX: "${TOKENPREFIX}"
+          HEADERTYPE: "${HEADERTYPE}"
+          ADMINUSERNAME: "${ADMINUSERNAME}"
+          ADMINPASSWORD: "${ADMINPASSWORD}"
+          ADMINROLE: "${ADMINROLE}"
+        env_file:
+          - ./.env
         restart: always
 volumes:
     postgres:

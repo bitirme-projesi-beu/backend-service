@@ -1,7 +1,8 @@
 package com.smartparkinglot.backendservice.config;
 
-import com.smartparkinglot.backendservice.service.driverservice.JwtUserDetailsService;
+import com.smartparkinglot.backendservice.service.accountservice.JwtUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,14 +16,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.smartparkinglot.backendservice.config.SecurityConstraints.HEADER_TYPE;
-import static com.smartparkinglot.backendservice.config.SecurityConstraints.TOKEN_PREFIX;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     private JwtUserDetailsService jwtUserDetailsService;
     private JwtTokenUtil jwtTokenUtil;
+    @Value("${tokenprefix}")
+    private String TOKEN_PREFIX;
+    @Value("${headertype}")
+    private String HEADER_TYPE;
 
     public JwtRequestFilter(JwtUserDetailsService jwtUserDetailsService, JwtTokenUtil jwtTokenUtil) {
         this.jwtUserDetailsService = jwtUserDetailsService;
@@ -32,9 +35,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-
+        System.out.println("headertype:::"+HEADER_TYPE);
         final String requestTokenHeader = request.getHeader(HEADER_TYPE);
-
+        System.out.println("requesttokenheader::"+requestTokenHeader);
         String username = null;
         String jwtToken = null;
         // JWT Token is in the form "Bearer token". Remove Bearer word and get

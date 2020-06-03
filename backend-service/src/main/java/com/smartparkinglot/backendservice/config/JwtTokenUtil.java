@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.smartparkinglot.backendservice.config.SecurityConstraints.JWT_TOKEN_VALIDITY;
 
 @Component
 public class JwtTokenUtil implements Serializable {
@@ -21,6 +20,8 @@ public class JwtTokenUtil implements Serializable {
     private static final long serialVersionUID = -2550185165626007488L;
     @Value("${secret}")
     private String SECRET;
+    @Value("${jwttokenvalidity}")
+    private String JWT_TOKEN_VALIDITY;
 
     //retrieve username from jwt token
     public String getUsernameFromToken(String token) {
