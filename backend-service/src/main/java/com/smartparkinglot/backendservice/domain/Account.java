@@ -9,6 +9,8 @@ import lombok.NonNull;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -30,6 +32,7 @@ public class Account {
     @Column(name="surname")
     @NonNull @NotNull private String surname;
     @NonNull @NotNull LocalDateTime createdAt;
+    private String role;
     private Boolean isDeleted;
 
 }

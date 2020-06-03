@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,22 +19,25 @@ public class ParkingLotController {
     @Autowired
     ParkingLotService parkingLotService;
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
-    public ResponseEntity<List<ParkingLot>> getAllDrivers(){
+    public ResponseEntity<List<ParkingLot>> getAllParkingLots(){
         return new ResponseEntity<List<ParkingLot>>(parkingLotService.getAllParkingLots(),HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("{id}")
     public ResponseEntity<ParkingLot> getById(@PathVariable Long id){
         return new ResponseEntity<ParkingLot>(parkingLotService.getById(id),HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<ParkingLot> addOrSave(@RequestBody ParkingLot parkingLot){
         return new ResponseEntity<ParkingLot>(parkingLotService.addOrSave(parkingLot),HttpStatus.CREATED);
     }
 
-
+    @PreAuthorize("hasRole('ROLE_DRIVER') || hasRole('ROLE_ADMIN')")
     @DeleteMapping()
     @Operation(summary = "deactivates parking lot for end-user")
     public ResponseEntity deactiveParkingLot(@RequestBody ParkingLot parkingLot){
@@ -41,6 +45,7 @@ public class ParkingLotController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("admin-delete")
     @Operation(summary = "deletes parking lot for admin")
     public ResponseEntity deleteParkingLot(@RequestBody ParkingLot parkingLot){
