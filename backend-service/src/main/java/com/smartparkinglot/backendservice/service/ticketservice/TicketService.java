@@ -11,14 +11,15 @@ public interface TicketService {
     Ticket getParkingLotTicket(Long parkingLotId, Long ticketId);
 
     List<Ticket> getDriverTickets(Long driverId);
+    List<Ticket> getDriverTicketsForDriver();
+
     Ticket getDriverTicket(Long driverId, Long ticketId);
+    Ticket getDriverTicketForDriver(Long ticketId);
+
 
     Ticket getTicket(Long ticketId);
     Ticket addOrSave(Ticket ticket);
     void deleteTicket(Ticket ticket);
 
     Ticket rateTicket(Ticket ticket);
-
-
-
 }

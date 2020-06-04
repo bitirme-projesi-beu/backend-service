@@ -14,4 +14,6 @@ public interface ParkingLotService {
 
     void updateRating(Long id);
     void updateParkingLotActiveCapacity(ParkingLot parkingLot,Integer addition);
+    List<ParkingLot> findPLOwnersParkingLots();
+
 }

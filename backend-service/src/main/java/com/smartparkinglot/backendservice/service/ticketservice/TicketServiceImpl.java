@@ -1,15 +1,18 @@
 package com.smartparkinglot.backendservice.service.ticketservice;
 
+import com.smartparkinglot.backendservice.domain.Account;
 import com.smartparkinglot.backendservice.domain.ParkingLot;
 import com.smartparkinglot.backendservice.domain.Reservation;
 import com.smartparkinglot.backendservice.domain.Ticket;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.repository.TicketRepository;
-import com.smartparkinglot.backendservice.service.driverservice.DriverService;
+import com.smartparkinglot.backendservice.service.accountservice.AccountService;
 import com.smartparkinglot.backendservice.service.parkinglotservice.ParkingLotService;
 import com.smartparkinglot.backendservice.service.reservationservice.ReservationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -24,7 +27,7 @@ public class TicketServiceImpl implements TicketService {
     @Autowired
     ParkingLotService parkingLotService;
     @Autowired
-    DriverService driverService;
+    AccountService accountService;
     @Autowired
     ReservationService reservationService;
 
@@ -33,12 +36,9 @@ public class TicketServiceImpl implements TicketService {
         return ticketRepository.findAll();
     }
 
+
     @Override
     public List<Ticket> getParkingLotTickets(Long parkingLotId) {
-        // future work -> gelen parkinglotid ile parkinglot bulunup owner_id'si bulunur ve isteği yapan kişinin id'si ile
-            // karşılaştırılır böylece kullanıcının sadece kendi otoparkına erişimi bulunur
-
-        // otoparkın varlığını kontrol etmelimiyim, otopark yoksa zaten boş liste döndürüyor ??
         if (!parkingLotService.isExistsById(parkingLotId)) throw new NotFoundException("There isn't any parking lot registered with id:"+parkingLotId);
         return ticketRepository.findByParkingLotId(parkingLotId);
     }
@@ -52,19 +52,40 @@ public class TicketServiceImpl implements TicketService {
         return ticket;
     }
 
+
     @Override
     public List<Ticket> getDriverTickets(Long driverId) {
         // future work -> driver ile admin erişebilmeli
             // gelen driverid ile authenticate olan kişinin id'si uyuşuyor ise isteği yerine getirlir.
-        if (!driverService.isExistsById(driverId)) throw new NotFoundException("There isn't any driver registered with id:"+driverId);
+        if (!accountService.isExistsById(driverId)) throw new NotFoundException("There isn't any driver registered with id:"+driverId);
         List<Ticket> ticketList = ticketRepository.findByDriverId(driverId);
         return ticketList;
 
     }
 
+
+    @Override
+    public List<Ticket> getDriverTicketsForDriver() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account)authentication.getPrincipal();
+        List<Ticket> ticketList = ticketRepository.findByDriverId(account.getId().longValue());
+        if (ticketList == null) throw new NotFoundException("no ticket list found with this driver id:"+account.getId().toString());
+        return ticketList;
+    }
+
+    @Override
+    public Ticket getDriverTicketForDriver(Long ticketId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account)authentication.getPrincipal();
+
+        Ticket ticket = ticketRepository.findById(ticketId).get();
+        if (ticket.getDriverId() != account.getId()) throw new NotFoundException("this ticket not under record for this driver id:"+account.getId());
+        return  ticket;
+    }
+
     @Override
     public Ticket getDriverTicket(Long driverId, Long ticketId) {
-        if (!driverService.isExistsById(driverId)) throw new NotFoundException("There isn't any driver registered with id:"+driverId);
+        if (!accountService.isExistsById(driverId)) throw new NotFoundException("There isn't any driver registered with id:"+driverId);
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow(() -> new NotFoundException("There isn't any ticket with id:"+ticketId) );
         if (ticket.getDriverId() != driverId) throw new NotFoundException("There isn't any ticket under requested driver with this ticket id"+ticketId);
         return ticket;
@@ -120,8 +141,10 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public Ticket rateTicket(Ticket ticket) {
-       Ticket ticket1 = ticketRepository.save(ticket);
-       parkingLotService.updateRating(ticket.getParkingLotId());
+        Ticket ticket1 = ticketRepository.findById(ticket.getId()).get();
+        ticket1.setRating(ticket.getRating());
+        ticketRepository.save(ticket1);
+        if (ticket1 != null) parkingLotService.updateRating(ticket1.getParkingLotId());
        return ticket1;
     }
 
