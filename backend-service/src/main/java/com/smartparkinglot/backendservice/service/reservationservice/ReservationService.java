@@ -69,5 +69,13 @@ public interface ReservationService {
     Reservation findByParkingLotIdAndPlateAndIsActiveTrue(Long parkingLotId, String plate);
 
 
+    /*
+        return reservations via authenticated user's info
+     */
+    List<Reservation> getDriverReservationsForDriver();
 
+    /*
+        returns driver reservation via authenticated user's info
+     */
+    Reservation getDriverReservationForDriver(Long res_id);
 }
