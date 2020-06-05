@@ -1,11 +1,18 @@
 package com.smartparkinglot.backendservice.service.parkinglotservice;
 
+import com.smartparkinglot.backendservice.domain.Account;
 import com.smartparkinglot.backendservice.domain.ParkingLot;
+import com.smartparkinglot.backendservice.domain.Ticket;
 import com.smartparkinglot.backendservice.exceptions.AccountDeactivatedException;
 import com.smartparkinglot.backendservice.exceptions.AlreadyExistsException;
 import com.smartparkinglot.backendservice.exceptions.NotFoundException;
 import com.smartparkinglot.backendservice.repository.ParkingLotRepository;
+import com.smartparkinglot.backendservice.service.accountservice.AccountService;
+import com.smartparkinglot.backendservice.service.ticketservice.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +22,10 @@ import java.util.List;
 public class ParkingLotServiceImpl implements ParkingLotService {
     @Autowired
     ParkingLotRepository parkingLotRepository;
+    @Autowired
+    TicketService ticketService;
+    @Autowired
+    AccountService accountService;
 
     @Override
     public List<ParkingLot> getAllParkingLots() {
@@ -35,11 +46,14 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
     @Override
     public ParkingLot addOrSave(ParkingLot parkingLot) {
-        String lotName = parkingLot.getName().toString();
 
-        Long parkingLotId = parkingLot.getId();
-        String parkingLotName = parkingLot.getName().toString();
-
+        String parkingLotName = parkingLot.getName();
+        Long ownerId = parkingLot.getParkingLotOwnerId();
+        if(!accountService.getById(ownerId).getAuthorities()
+                .stream().anyMatch(
+                        a -> ((GrantedAuthority) a).getAuthority().equals("ROLE_PL.OWNER"))
+        ) throw new NotFoundException("Given owner account is not PL OWNER ACCOUNT");
+        if (parkingLot.getLatitude() == null || parkingLot.getLongtitude() == null) throw new NotFoundException("koordinatlar bos olamaz!");
         if (parkingLot == null && parkingLotRepository.findByName(parkingLotName) != null ){
             ParkingLot found_parking_lot = parkingLotRepository.findByName(parkingLotName);
             if (found_parking_lot.getIsDeleted()){
@@ -52,6 +66,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             throw new AlreadyExistsException("Parking lot already exists with given credentials");
         }else{
             parkingLot.setIsDeleted(false);
+            parkingLot.setActiveCapacity(parkingLot.getMaxCapacity());
             return parkingLotRepository.save(parkingLot);
         }
     }
@@ -77,5 +92,32 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     @Override
     public Boolean isExistsById(Long parkinglotId) {
         return parkingLotRepository.existsById(parkinglotId);
+    }
+
+    @Override
+    public void updateParkingLotActiveCapacity(ParkingLot parkingLot, Integer addition) {
+        parkingLot.setActiveCapacity(parkingLot.getActiveCapacity()+ (addition));
+        parkingLotRepository.save(parkingLot);
+    }
+
+    @Override
+    public List<ParkingLot> findPLOwnersParkingLots() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account)auth.getPrincipal();
+        return parkingLotRepository.findByParkingLotOwnerId(account.getId().longValue());
+    }
+
+    @Override
+    public void updateRating(Long parkingLotId){
+        Double totalPoint = 0.0;
+        Integer ticketsSize = 0;
+        for (Ticket ticket: ticketService.getParkingLotTickets(parkingLotId)){
+            totalPoint += ticket.getRating();
+            ticketsSize++;
+        }
+        Double avg = totalPoint / ticketsSize;
+        ParkingLot parkingLot = parkingLotRepository.findById(parkingLotId).get();
+        parkingLot.setRating(avg);
+        parkingLotRepository.save(parkingLot);
     }
 }

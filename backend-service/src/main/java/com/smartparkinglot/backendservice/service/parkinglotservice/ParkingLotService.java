@@ -11,4 +11,9 @@ public interface ParkingLotService {
     void deleteParkingLot(ParkingLot parkingLot);
     void setDeactive(ParkingLot parkingLot);
     Boolean isExistsById(Long parkinglotId);
+
+    void updateRating(Long id);
+    void updateParkingLotActiveCapacity(ParkingLot parkingLot,Integer addition);
+    List<ParkingLot> findPLOwnersParkingLots();
+
 }

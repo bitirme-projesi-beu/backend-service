@@ -3,6 +3,8 @@ package com.smartparkinglot.backendservice.controller;
 
 import com.smartparkinglot.backendservice.domain.Driver;
 import com.smartparkinglot.backendservice.service.driverservice.DriverService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,13 +39,15 @@ public class DriverController {
         return new ResponseEntity(driverService.Login(email, password),HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/delete")
+    @Operation(summary = "deactivates user for end-user ")
     public ResponseEntity deactiveDriver(@RequestBody Driver driver){
         driverService.setDeactive(driver);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @DeleteMapping("delete")
+    @DeleteMapping("admin-delete")
+    @Operation(summary = "deletes user for admin")
     public ResponseEntity deleteDriver(@RequestBody Driver driver){
         driverService.deleteDriver(driver);
         return new ResponseEntity(HttpStatus.OK);

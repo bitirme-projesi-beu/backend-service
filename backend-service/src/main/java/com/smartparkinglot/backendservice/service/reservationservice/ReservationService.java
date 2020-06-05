@@ -37,6 +37,11 @@ public interface ReservationService {
     Reservation updateReservation(Reservation reservation, LocalDateTime now);
 
     /*
+    cancel reservation before reaching parking lot
+     */
+    void cancelReservation(Reservation reservation);
+
+    /*
         returns driver reservations
      */
     List<Reservation> getDriverReservations(Long driver_id);
@@ -64,5 +69,13 @@ public interface ReservationService {
     Reservation findByParkingLotIdAndPlateAndIsActiveTrue(Long parkingLotId, String plate);
 
 
+    /*
+        return reservations via authenticated user's info
+     */
+    List<Reservation> getDriverReservationsForDriver();
 
+    /*
+        returns driver reservation via authenticated user's info
+     */
+    Reservation getDriverReservationForDriver(Long res_id);
 }

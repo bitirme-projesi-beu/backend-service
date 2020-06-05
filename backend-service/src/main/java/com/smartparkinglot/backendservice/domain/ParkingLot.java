@@ -23,6 +23,11 @@ public class ParkingLot {
         // erişilmeye çalışılan otopark in owner id'si ile erişmeye çalışan kişinin id'si örtüşmeşi
     @NonNull @NotNull private String name;
     @NonNull @NotNull private Double hourlyWage;
+    @NonNull @NotNull private Integer maxCapacity;
+    private Integer activeCapacity;
+    @NonNull @NotNull private Double latitude;
+    @NonNull @NotNull private Double longtitude;
+    private Double rating;
     @NonNull @NotNull private Boolean isDeleted;
 
 }
