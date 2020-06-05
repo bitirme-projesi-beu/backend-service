@@ -19,7 +19,7 @@ public class ParkingLotController {
     @Autowired
     private ParkingLotService parkingLotService;
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_DRIVER')")
     @GetMapping @Operation(summary = "Retrieves all parking lots for ADMIN", security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity<List<ParkingLot>> getAllParkingLots(){
         return new ResponseEntity<List<ParkingLot>>(parkingLotService.getAllParkingLots(),HttpStatus.OK);

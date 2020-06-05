@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -44,10 +45,7 @@ public class AccountServiceImpl implements AccountService {
     public Account getById(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Account not found with id: "+id));
-
-
         return account;
-
     }
 
     @Override
@@ -55,7 +53,7 @@ public class AccountServiceImpl implements AccountService {
         Long accountId = account.getId();
         String accountMail = account.getEmail();
 
-        if (accountId == null && accountRepository.findByEmail(accountMail) != null ){
+        if (accountId == null && accountRepository.isExistsByEmail(accountMail) == true){
             Account found_account = accountRepository.findByEmail(accountMail);
             if (found_account.getIsDeleted()){
                 /*
@@ -74,28 +72,27 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount(Account account) {
-        if (account.getId() == null)
-            throw new NotFoundException("There is no id attached to account");
         try{
             accountRepository.deleteById(account.getId());
         }catch (Exception ex){
-            System.out.println(ex.getLocalizedMessage());
+            throw new NotFoundException("There is no id attached to account");
         }
     }
 
     @Override
     public void setDeactive(Account account) {
-        Account searchResultAccount = accountRepository.findById(account.getId()).get();
-        if (searchResultAccount == null) throw new NotFoundException("Account not found with id:"+ account.getId());
+        Account searchResultAccount = accountRepository.findById(account.getId())
+                .orElseThrow( () -> new NotFoundException("There is no account with this id:"+account.getId()));
         searchResultAccount.setIsDeleted(true);
-        accountRepository.save(searchResultAccount);
+        try {
+            accountRepository.save(searchResultAccount);
+        }catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getLocalizedMessage());
+        }
     }
-
-
 
     @Override
     public String Login(Account account) {
-
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(account.getEmail(),account.getPassword()));
         }catch (DisabledException e){
@@ -107,12 +104,15 @@ public class AccountServiceImpl implements AccountService {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(account.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
         return token;
-
     }
 
     @Override
     public Boolean isExistsById(Long id) {
-        return accountRepository.existsById(id);
+        try{
+            return accountRepository.existsById(id);
+        }catch (Exception e){
+            throw new NotFoundException("There must be a id attached to body");
+        }
     }
 
 }

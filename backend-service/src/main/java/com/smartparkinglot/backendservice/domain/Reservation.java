@@ -24,6 +24,6 @@ public class Reservation {
     @NonNull @NotNull private LocalDateTime createdAt;
     private LocalDateTime deactivatedAt;
     @NonNull @NotNull private String plate;
-    @NonNull @NotNull private Double hourlyWage; // notnull yapma
+    @NonNull  private Double hourlyWage;
     private Double cost;
 }
