@@ -12,6 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,10 +46,15 @@ public class AccountServiceImpl implements AccountService {
     public Account getById(Long id) {
         Account account = accountRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Account not found with id: "+id));
-
-
         return account;
+    }
 
+    @Override
+    public Account getAuthenticatedProfile(){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Account account = (Account)auth.getPrincipal();
+        account.setPassword("***");
+        return account;
     }
 
     @Override
