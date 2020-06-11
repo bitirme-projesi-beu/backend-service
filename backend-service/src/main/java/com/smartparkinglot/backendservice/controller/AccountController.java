@@ -32,6 +32,12 @@ public class AccountController {
         return new ResponseEntity<Account>(accountService.getById(id),HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_DRIVER')")
+    @GetMapping("my-profile") @Operation(summary = "It retrieves authenticated user profile info", security = { @SecurityRequirement(name = "bearer-key") })
+    public ResponseEntity<Account> getAuthenticatedProfile(){
+        return new ResponseEntity<Account>(accountService.getAuthenticatedProfile(),HttpStatus.OK);
+    }
+
     @PreAuthorize("hasRole('ROLE_DRIVER') || hasRole('ROLE_ADMIN')")
     @DeleteMapping("delete")
     @Operation(summary = "deactivates user for end-user ",security = { @SecurityRequirement(name = "bearer-key") })
