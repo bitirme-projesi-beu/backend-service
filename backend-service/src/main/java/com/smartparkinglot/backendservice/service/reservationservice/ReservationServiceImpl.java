@@ -67,6 +67,7 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setDriverId(account.getId().longValue());
         reservation.setActive(true);
         reservation.setHourlyWage(parkingLotService.getById(reservation.getParkingLotId()).getHourlyWage() / 3);
+        reservation.setParkingLotName(parkingLotService.getById(reservation.getParkingLotId()).getName());
         return reservationRepository.save(reservation);
 
     }

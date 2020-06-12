@@ -19,11 +19,13 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NonNull @NotNull private Long parkingLotId;
+    private String parkingLotName;
     @NonNull private Long driverId;
     private boolean isActive;
     @NonNull @NotNull private LocalDateTime createdAt;
     private LocalDateTime deactivatedAt;
     @NonNull @NotNull private String plate;
-    @NonNull @NotNull private Double hourlyWage; // notnull yapma
+    private Double hourlyWage;
     private Double cost;
+
 }
