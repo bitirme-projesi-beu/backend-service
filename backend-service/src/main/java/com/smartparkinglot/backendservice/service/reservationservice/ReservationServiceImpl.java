@@ -93,18 +93,16 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public void cancelReservation(Reservation reservation) {
+        Reservation foundRes = reservationRepository.findById(reservation.getId()).orElseThrow( () -> new NotFoundException("no res with id:"+reservation.getId()));
         ParkingLot parkingLot = parkingLotService.getById(reservation.getParkingLotId());
         parkingLotService.updateParkingLotActiveCapacity(parkingLot,1);
-
-        LocalDateTime createdAt = reservation.getCreatedAt();
-        LocalDateTime deactivatedAt = LocalDateTime.now();
-        reservation.setDeactivatedAt(deactivatedAt);
-        Duration duration = Duration.between(createdAt,deactivatedAt);
+        foundRes.setDeactivatedAt(reservation.getCreatedAt());
+        Duration duration = Duration.between(foundRes.getCreatedAt(),reservation.getCreatedAt());
         Long hoursPast = duration.toHours(); // otoparka gelene kadar geçen zaman veya iptal edilene kadar geçen zaman
-        reservation.setCost((hoursPast +1) * reservation.getHourlyWage() ); // ücret otopark saatlik ücretinin 3te1 i olarak atanır
-        reservation.setActive(false); // deaktif edilir
+        foundRes.setCost((hoursPast +1) * reservation.getHourlyWage() ); // ücret otopark saatlik ücretinin 3te1 i olarak atanır
+        foundRes.setActive(false); // deaktif edilir
 
-        reservationRepository.save(reservation);
+        reservationRepository.save(foundRes);
     }
 
     @Override
