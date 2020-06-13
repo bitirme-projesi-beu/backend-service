@@ -99,7 +99,7 @@ public class ReservationServiceImpl implements ReservationService {
         foundRes.setDeactivatedAt(reservation.getCreatedAt());
         Duration duration = Duration.between(foundRes.getCreatedAt(),reservation.getCreatedAt());
         Long hoursPast = duration.toHours(); // otoparka gelene kadar geçen zaman veya iptal edilene kadar geçen zaman
-        foundRes.setCost((hoursPast +1) * reservation.getHourlyWage() ); // ücret otopark saatlik ücretinin 3te1 i olarak atanır
+        foundRes.setCost((hoursPast +1) * foundRes.getHourlyWage() ); // ücret otopark saatlik ücretinin 3te1 i olarak atanır
         foundRes.setActive(false); // deaktif edilir
 
         reservationRepository.save(foundRes);
