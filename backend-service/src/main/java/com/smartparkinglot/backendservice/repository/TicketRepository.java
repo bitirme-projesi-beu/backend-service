@@ -8,5 +8,6 @@ import java.util.List;
 public interface TicketRepository extends JpaRepository<Ticket,Long> {
     List<Ticket> findByParkingLotId(Long parkingLotId);
     List<Ticket> findByDriverId(Long driverId);
+    List<Ticket> findByDriverIdByOrderByCreatedAtDesc(Long driverId);
     Ticket findByParkingLotIdAndPlateAndIsItInsideTrue(Long parkingLotId, String plate);
 }
