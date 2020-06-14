@@ -43,7 +43,7 @@ public class ParkingLotController {
         return new ResponseEntity<ParkingLot>(parkingLotService.addOrSave(parkingLot),HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ROLE_DRIVER') || hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_PL.OWNER') || hasRole('ROLE_ADMIN')")
     @DeleteMapping()
     @Operation(summary = "deactivates parking lot for end-user",security = { @SecurityRequirement(name = "bearer-key") })
     public ResponseEntity deactiveParkingLot(@RequestBody ParkingLot parkingLot){

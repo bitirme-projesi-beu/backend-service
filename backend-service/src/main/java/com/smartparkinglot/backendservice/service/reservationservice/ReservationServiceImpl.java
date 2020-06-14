@@ -140,7 +140,7 @@ public class ReservationServiceImpl implements ReservationService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account)authentication.getPrincipal();
 
-        List<Reservation> reservations = reservationRepository.findByDriverId(account.getId());
+        List<Reservation> reservations = reservationRepository.findByDriverIdOrderByCreatedAtDesc(account.getId());
         if (reservations == null) throw new NotFoundException("no reservations to show with that id:"+account.getId().toString());
         return  reservations;
     }

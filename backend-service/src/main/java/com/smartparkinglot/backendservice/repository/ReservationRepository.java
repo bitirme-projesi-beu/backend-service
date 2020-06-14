@@ -9,6 +9,7 @@ public interface ReservationRepository extends JpaRepository<Reservation,Long> {
     List<Reservation> findByPlate(String plate);
     void deleteById(Long id);
     List<Reservation> findByDriverId(Long driverId);
+    List<Reservation> findByDriverIdOrderByCreatedAtDesc(Long driverId);
     Reservation findByDriverIdAndIsActiveTrue(Long driverId);
     Reservation findByParkingLotIdAndPlateAndIsActiveTrue(Long parkingLotId, String plate);
 

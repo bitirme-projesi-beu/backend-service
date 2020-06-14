@@ -68,7 +68,7 @@ public class TicketServiceImpl implements TicketService {
     public List<Ticket> getDriverTicketsForDriver() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Account account = (Account)authentication.getPrincipal();
-        List<Ticket> ticketList = ticketRepository.findByDriverId(account.getId().longValue());
+        List<Ticket> ticketList = ticketRepository.findByDriverIdOrderByCreatedAtDesc(account.getId().longValue());
         if (ticketList == null) throw new NotFoundException("no ticket list found with this driver id:"+account.getId().toString());
         return ticketList;
     }
