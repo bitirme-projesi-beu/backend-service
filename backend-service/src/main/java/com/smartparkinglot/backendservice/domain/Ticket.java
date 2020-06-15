@@ -18,6 +18,7 @@ public class Ticket {
     private Long id;
     @NonNull @NotNull
     private Long parkingLotId;
+    private String parkingLotName;
     @NonNull
     private Long driverId; // in case of guest it will be -1
     @NonNull @NotNull
