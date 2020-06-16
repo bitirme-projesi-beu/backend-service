@@ -114,6 +114,7 @@ public class TicketServiceImpl implements TicketService {
         if (activeReservation != null){
             activeReservation = reservationService.updateReservation(activeReservation,ticket.getCreatedAt()); // end the reservation and prepare to start a ticket
             Ticket startingTicket = startTheTicket(ticket,activeReservation.getDriverId(),activeReservation.getCost(),true);
+            startingTicket.setParkingLotName(parkingLotService.getById(startingTicket.getParkingLotId()).getName());
             return ticketRepository.save(startingTicket);
         }
         else if(someoneExiting != null) {
@@ -123,6 +124,7 @@ public class TicketServiceImpl implements TicketService {
         else {
             // if there is no active res with that plate in that parking lot and if there is no exit case it means guest entering parking lot
             Ticket startingGuestTicket = startTheTicket(ticket,Long.valueOf(-1),0.0,true);
+            startingGuestTicket.setParkingLotName(parkingLotService.getById(startingGuestTicket.getParkingLotId()).getName());
             return ticketRepository.save(startingGuestTicket);
         }
     }
@@ -143,8 +145,8 @@ public class TicketServiceImpl implements TicketService {
     public Ticket rateTicket(Ticket ticket) {
         Ticket ticket1 = ticketRepository.findById(ticket.getId()).get();
         ticket1.setRating(ticket.getRating());
-        ticketRepository.save(ticket1);
-        if (ticket1 != null) parkingLotService.updateRating(ticket1.getParkingLotId());
+        Ticket ticket2 = ticketRepository.save(ticket1);
+        if (ticket2 != null) parkingLotService.updateRating(ticket1.getParkingLotId());
        return ticket1;
     }
 

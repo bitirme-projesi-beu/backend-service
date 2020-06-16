@@ -34,7 +34,7 @@ public class TicketController {
         return new ResponseEntity<Ticket>(ticketService.getTicket(ticketId),HttpStatus.ACCEPTED);
     }
 
-    @PreAuthorize("hasRole('ROLE_DRIVER') || hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_PL.OWNER') || hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<Ticket> addOrSave(@RequestBody Ticket ticket){
         return new ResponseEntity<Ticket>(ticketService.addOrSave(ticket),HttpStatus.CREATED);
