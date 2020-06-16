@@ -145,8 +145,8 @@ public class TicketServiceImpl implements TicketService {
     public Ticket rateTicket(Ticket ticket) {
         Ticket ticket1 = ticketRepository.findById(ticket.getId()).get();
         ticket1.setRating(ticket.getRating());
-        ticketRepository.save(ticket1);
-        if (ticket1 != null) parkingLotService.updateRating(ticket1.getParkingLotId());
+        Ticket ticket2 = ticketRepository.save(ticket1);
+        if (ticket2 != null) parkingLotService.updateRating(ticket1.getParkingLotId());
        return ticket1;
     }
 
