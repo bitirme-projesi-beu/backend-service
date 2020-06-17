@@ -19,14 +19,12 @@ public class Ticket {
     @NonNull @NotNull
     private Long parkingLotId;
     private String parkingLotName;
-    @NonNull
     private Long driverId; // in case of guest it will be -1
     @NonNull @NotNull
     private String plate;
     @NonNull @NotNull
     private LocalDateTime createdAt;
     private LocalDateTime exitedAt;
-    @NonNull
     private Boolean isItInside;
     private Double cost;
     private Integer rating;
